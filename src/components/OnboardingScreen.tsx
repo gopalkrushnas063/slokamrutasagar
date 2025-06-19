@@ -1,12 +1,14 @@
-import React, { useRef, useState } from "react";
+import { Audio } from "expo-av"; // Import Audio from expo-av
+import React, { useEffect, useRef, useState } from "react";
 import {
   Dimensions,
   FlatList,
+  Image,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
   ViewToken,
-  StyleSheet,
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { useTheme } from "../context/ThemeContext";
@@ -19,38 +21,42 @@ interface OnboardingItem {
   id: string;
   title: string;
   description: string;
-  emoji: string;
+  emoji: any;
 }
 
 const onboardingData: OnboardingItem[] = [
   {
     id: "1",
-    title: "Welcome!",
-    description: "Discover amazing themes and personalize your experience",
-    emoji: "⭕️❗️⭕️",
+    title: "Welcome to the Divine Journey!",
+    description:
+      "Explore the sacred world of Jagannath, Krishna, and the rich heritage of Bhagabat Sanskriti. Immerse yourself in timeless stories, teachings, and cultural traditions that inspire the soul.",
+    emoji: require("@/assets/images/app_logo.png"),
   },
   {
     id: "2",
-    title: "Dark Mode",
-    description: "Switch to dark mode for a comfortable viewing experience",
-    emoji: "🕉️",
+    title: "Hindu Shlokas with Simple Meanings",
+    description:
+      "Discover a collection of powerful Hindu shlokas from the Vedas, Gita, Upanishads, and more — explained in a simple, easy-to-understand way. Perfect for beginners and spiritual seekers who wish to learn and connect deeply with ancient wisdom.",
+    emoji: require("@/assets/images/ob_1.png"),
   },
   {
     id: "3",
     title: "Gradient Theme",
     description: "Try our beautiful gradient theme for a vibrant look",
-    emoji: "🔱",
+    emoji: require("@/assets/images/ob_2.png"),
   },
   {
     id: "4",
     title: "Get Started",
     description: "You're all set! Start exploring the app",
-    emoji: "🦚",
+    emoji: require("@/assets/images/ob_3.png"),
   },
 ];
 
 export const OnboardingScreen: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [sound, setSound] = useState<Audio.Sound>();
   const dispatch = useDispatch();
   const theme = useTheme();
   const flatListRef = useRef<FlatList>(null);
@@ -58,17 +64,57 @@ export const OnboardingScreen: React.FC = () => {
     itemVisiblePercentThreshold: 50,
   }).current;
 
+  // Load the sound when component mounts
+  useEffect(() => {
+    async function loadSound() {
+      const { sound } = await Audio.Sound.createAsync(
+        require("../../assets/sounds/bg_2.mp3"), // Make sure to add this file to your assets
+        { shouldPlay: false, isLooping: true }
+      );
+      setSound(sound);
+    }
+
+    loadSound();
+
+    return () => {
+      if (sound) {
+        sound.unloadAsync();
+      }
+    };
+  }, []);
+
+  // Play or pause the sound when isPlaying changes
+  useEffect(() => {
+    if (!sound) return;
+
+    if (isPlaying) {
+      sound.playAsync();
+    } else {
+      sound.pauseAsync();
+    }
+  }, [isPlaying, sound]);
+
+  const togglePlayPause = () => {
+    setIsPlaying(!isPlaying);
+  };
+
   const handleNext = () => {
     if (currentIndex < onboardingData.length - 1) {
       const nextIndex = currentIndex + 1;
       flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
       setCurrentIndex(nextIndex);
     } else {
+      if (sound) {
+        sound.stopAsync();
+      }
       dispatch(completeOnboarding());
     }
   };
 
   const handleSkip = () => {
+    if (sound) {
+      sound.stopAsync();
+    }
     dispatch(completeOnboarding());
   };
 
@@ -82,11 +128,12 @@ export const OnboardingScreen: React.FC = () => {
 
   const renderItem = ({ item }: { item: OnboardingItem }) => (
     <View style={[styles.slide, { width }]}>
-      <Text style={styles.emoji}>{item.emoji}</Text>
-      <Text style={[styles.title, { color: theme.text.color }]}>
+      {/* <Text style={styles.emoji}>{item.emoji}</Text> */}
+      <Image source={item.emoji} style={{ height: 200, width: 200 }} />
+      <Text style={[styles.title, { color: "black" }]}>
         {item.title}
       </Text>
-      <Text style={[styles.description, { color: theme.text.color }]}>
+      <Text style={[styles.description, { color: "black" }]}>
         {item.description}
       </Text>
     </View>
@@ -112,8 +159,23 @@ export const OnboardingScreen: React.FC = () => {
   return (
     <GradientBackground>
       <View style={styles.container}>
+        {/* Background Image in Top-Right Corner */}
+        <Image
+          source={require("@/assets/images/m4.png")} // Replace with your image path
+          style={styles.backgroundImage}
+          resizeMode="contain"
+        />
+        {/* Music toggle button */}
+        <TouchableOpacity style={styles.musicButton} onPress={togglePlayPause}>
+          <Text style={[styles.musicIcon, { color: theme.text.color }]}>
+            {isPlaying ? "🎵" : "🎶"}
+          </Text>
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-          <Text style={[styles.skipText, { color: theme.text.color }]}>Skip</Text>
+          <Text style={[styles.skipText, { color: "black" }]}>
+            Skip
+          </Text>
         </TouchableOpacity>
 
         <FlatList
@@ -137,7 +199,9 @@ export const OnboardingScreen: React.FC = () => {
           onPress={handleNext}
         >
           <Text style={[styles.nextButtonText, theme.buttonText]}>
-            {currentIndex === onboardingData.length - 1 ? "Get Started" : "Next"}
+            {currentIndex === onboardingData.length - 1
+              ? "Get Started"
+              : "Next"}
           </Text>
         </TouchableOpacity>
       </View>
@@ -149,6 +213,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 50,
+  },
+  backgroundImage: {
+    position: "absolute",
+    top: 0,
+    alignSelf: "center", // This centers the image horizontally
+    width: 220, // Adjust as needed
+    height: 100, // Adjust as needed
+    // opacity: 0.3, // Optional: Adjust opacity if needed
+  },
+  musicButton: {
+    position: "absolute",
+    top: 50,
+    left: 20,
+    zIndex: 1,
+    padding: 10,
+  },
+  musicIcon: {
+    fontSize: 24,
   },
   skipButton: {
     position: "absolute",
@@ -165,7 +247,7 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 40,
+    paddingHorizontal: 20,
   },
   emoji: {
     fontSize: 80,
@@ -183,7 +265,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 24,
     opacity: 0.8,
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
   },
   pagination: {
     flexDirection: "row",
@@ -202,7 +284,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    marginBottom: 30,
+    marginBottom: 40,
   },
   nextButtonText: {
     fontSize: 18,

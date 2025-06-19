@@ -31,7 +31,7 @@ export const gradientTheme = {
     padding: 20,
   },
   text: {
-    color: '#FFF',
+    color: '#000000',
     fontSize: 16,
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
     textShadowOffset: { width: 1, height: 1 },
