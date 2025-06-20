@@ -23,7 +23,7 @@ export default function TabLayout() {
 
   const tabBarActiveTintColor =
     currentTheme === "gradient"
-      ? "#000000"
+      ? "#922033"
       : currentTheme === "dark"
       ? "#FFA500"
       : "#007AFF";

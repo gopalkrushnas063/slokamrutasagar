@@ -1,23 +1,23 @@
 // app/pages/bookdetails.tsx
+import { Ionicons } from "@expo/vector-icons";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React from "react";
 import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
   Dimensions,
-  StatusBar,
+  Image,
   Platform,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { useLocalSearchParams, useNavigation } from "expo-router";
-import { useTheme } from "../../src/context/ThemeContext";
-import { GradientBackground } from "../../src/styles/themes";
-import { useSelector } from "react-redux";
-import { RootState } from "../../src/store";
-import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useSelector } from "react-redux";
+import { useTheme } from "../../src/context/ThemeContext";
+import { RootState } from "../../src/store";
+import { GradientBackground } from "../../src/styles/themes";
 
 // Sample book data
 const sampleBookData = {
@@ -27,13 +27,9 @@ const sampleBookData = {
   author: "Sri Krishna",
   image: require("@/assets/images/m1.png"),
   rating: 4.8,
-  content: `धृतराष्ट्र उवाच
-धर्मक्षेत्रे कुरुक्षेत्रे समवेता युयुत्सवः।
-मामकाः पाण्डवाश्चैव किमकुर्वत सञ्जय॥1॥
-  
-सञ्जय उवाच
-दृष्ट्वा तु पाण्डवानीकं व्यूढं दुर्योधनस्तदा।
-आचार्यमुपसङ्गम्य राजा वचनमब्रवीत्॥2॥`,
+  content: `Dhritarashtra uvacha
+Dharma-kshetre kuru-kshetre samaveta yuyutsavah
+Mamakah pandavashchaiva kimakurvata sanjaya`,
   chapters: 18,
   language: "Sanskrit",
   verseCount: 47,
@@ -43,43 +39,87 @@ export default function BookDetailsScreen() {
   const navigation = useNavigation();
   const { id } = useLocalSearchParams();
   const theme = useTheme();
-  const currentTheme = useSelector((state: RootState) => state.theme.currentTheme);
+  const currentTheme = useSelector(
+    (state: RootState) => state.theme.currentTheme
+  );
 
   // Get book data
   const book = sampleBookData;
 
   // Theme-based styles
-  const dynamicStyles = {
-    header: {
-      backgroundColor: "transparent",
-      borderBottomColor: "#d19a9c",
-    },
-    headerTitle: {
-      color: "#5d0e0f",
-    },
-    backButton: {
-      backgroundColor: "rgba(209, 154, 156, 0.5)",
-      borderRadius: 20,
-      padding: 8,
-    },
-    contentContainer: {
-      backgroundColor: "transparent",
-    },
-    textColor: {
-      color: "#5d0e0f",
-    },
-    borderColor: {
-      borderColor: "#d19a9c",
-    },
+  const getDynamicStyles = () => {
+    if (currentTheme === "dark") {
+      return {
+        header: {
+          backgroundColor: "transparent",
+          borderBottomColor: "#444",
+        },
+        headerTitle: {
+          color: "#ffffff",
+        },
+        backButton: {
+          backgroundColor: "rgba(255, 255, 255, 0.1)",
+          borderRadius: 20,
+          padding: 8,
+        },
+        textColor: {
+          color: "#ffffff",
+        },
+        borderColor: {
+          borderColor: "#555",
+        },
+        iconColor: "#ffffff",
+        backgroundStyle: {
+          backgroundColor: "#000000",
+        },
+        verseContainerBg: "rgba(255, 255, 255, 0.1)",
+        readButtonBg: "rgba(255, 255, 255, 0.2)",
+        borderDecorationBg: "rgba(255, 255, 255, 0.05)",
+        innerBorderBg: "rgba(255, 255, 255, 0.1)",
+      };
+    } else {
+      return {
+        header: {
+          backgroundColor: "transparent",
+          borderBottomColor: "#d19a9c",
+        },
+        headerTitle: {
+          color: "#5d0e0f",
+        },
+        backButton: {
+          backgroundColor: "rgba(209, 154, 156, 0.5)",
+          borderRadius: 20,
+          padding: 8,
+        },
+        textColor: {
+          color: "#5d0e0f",
+        },
+        borderColor: {
+          borderColor: "#d19a9c",
+        },
+        iconColor: "#5d0e0f",
+        backgroundStyle:
+          currentTheme === "gradient" ? {} : { backgroundColor: "#fafafa" },
+        verseContainerBg: "rgba(255, 255, 255, 0.3)",
+        readButtonBg: "rgba(209, 154, 156, 0.3)",
+        borderDecorationBg: "rgba(255, 255, 255, 0.5)",
+        innerBorderBg: "rgba(255, 255, 255, 0.3)",
+      };
+    }
   };
 
+  const dynamicStyles = getDynamicStyles();
+
   const renderContent = () => (
-    <View style={{ flex: 1 }}>
+    <View style={[styles.container, dynamicStyles.backgroundStyle]}>
       {/* Header with Back Button */}
-      <SafeAreaView edges={['top']} style={{ 
-        backgroundColor: "transparent",
-        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
-      }}>
+      <SafeAreaView
+        edges={["top"]}
+        style={{
+          backgroundColor: "transparent",
+          paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+        }}
+      >
         <View style={[styles.header, dynamicStyles.header]}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
@@ -88,7 +128,7 @@ export default function BookDetailsScreen() {
             <Ionicons
               name="arrow-back"
               size={24}
-              color="#5d0e0f"
+              color={dynamicStyles.iconColor}
             />
           </TouchableOpacity>
           <Text style={[styles.headerTitle, dynamicStyles.headerTitle]}>
@@ -98,17 +138,32 @@ export default function BookDetailsScreen() {
       </SafeAreaView>
 
       {/* Scrollable Content */}
-      <ScrollView 
+      <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* Traditional Indian pattern border */}
-        <View style={[styles.borderDecoration, dynamicStyles.borderColor]}>
-          <View style={[styles.innerBorder, dynamicStyles.borderColor]}>
+        <View
+          style={[
+            styles.borderDecoration,
+            dynamicStyles.borderColor,
+            { backgroundColor: dynamicStyles.borderDecorationBg },
+          ]}
+        >
+          <View
+            style={[
+              styles.innerBorder,
+              dynamicStyles.borderColor,
+              { backgroundColor: dynamicStyles.innerBorderBg },
+            ]}
+          >
             <Image
               source={book.image}
-              style={styles.bookCover}
+              style={[
+                styles.bookCover,
+                currentTheme === "dark" ? { tintColor: "#ffffff" } : {},
+              ]}
               resizeMode="contain"
             />
           </View>
@@ -124,7 +179,7 @@ export default function BookDetailsScreen() {
           <Text style={[styles.bookSubtitle, dynamicStyles.textColor]}>
             {book.subtitle}
           </Text>
-          
+
           <View style={[styles.divider, dynamicStyles.borderColor]} />
 
           <Text style={[styles.bookAuthor, dynamicStyles.textColor]}>
@@ -133,25 +188,29 @@ export default function BookDetailsScreen() {
 
           <View style={styles.detailsContainer}>
             <View style={styles.detailItem}>
-              <Ionicons name="book" size={18} color="#5d0e0f" />
+              <Ionicons name="book" size={18} color={dynamicStyles.iconColor} />
               <Text style={[styles.detailText, dynamicStyles.textColor]}>
                 {book.chapters} अध्याय
               </Text>
             </View>
             <View style={styles.detailItem}>
-              <Ionicons name="star" size={18} color="#5d0e0f" />
+              <Ionicons name="star" size={18} color={dynamicStyles.iconColor} />
               <Text style={[styles.detailText, dynamicStyles.textColor]}>
                 {book.rating}
               </Text>
             </View>
             <View style={styles.detailItem}>
-              <Ionicons name="language" size={18} color="#5d0e0f" />
+              <Ionicons
+                name="language"
+                size={18}
+                color={dynamicStyles.iconColor}
+              />
               <Text style={[styles.detailText, dynamicStyles.textColor]}>
                 {book.language}
               </Text>
             </View>
             <View style={styles.detailItem}>
-              <Ionicons name="list" size={18} color="#5d0e0f" />
+              <Ionicons name="list" size={18} color={dynamicStyles.iconColor} />
               <Text style={[styles.detailText, dynamicStyles.textColor]}>
                 {book.verseCount} श्लोक
               </Text>
@@ -163,41 +222,75 @@ export default function BookDetailsScreen() {
           <Text style={[styles.sectionTitle, dynamicStyles.textColor]}>
             अध्याय सारांश
           </Text>
-          
-          <View style={[styles.verseContainer, dynamicStyles.borderColor]}>
+
+          <View
+            style={[
+              styles.verseContainer,
+              dynamicStyles.borderColor,
+              { backgroundColor: dynamicStyles.verseContainerBg },
+            ]}
+          >
             <Text style={[styles.bookContent, dynamicStyles.textColor]}>
               {book.content}
             </Text>
           </View>
 
-          <TouchableOpacity style={[styles.readButton, { backgroundColor: "rgba(209, 154, 156, 0.3)" }]}>
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: "/pages/reading",
+                params: { id: book.id },
+              })
+            }
+            style={[
+              styles.readButton,
+              {
+                backgroundColor: dynamicStyles.readButtonBg,
+                borderColor: dynamicStyles.borderColor.borderColor,
+              },
+            ]}
+          >
             <Text style={[styles.readButtonText, dynamicStyles.textColor]}>
-              पढ़ना शुरू करें
+              Start Reading
             </Text>
-            <Ionicons name="book" size={20} color="#5d0e0f" />
+            <Ionicons name="book" size={20} color={dynamicStyles.iconColor} />
           </TouchableOpacity>
         </View>
       </ScrollView>
     </View>
   );
 
+  if (currentTheme === "gradient") {
+    return (
+      <>
+        <StatusBar
+          backgroundColor="transparent"
+          barStyle="dark-content"
+          translucent={true}
+        />
+        <GradientBackground>{renderContent()}</GradientBackground>
+      </>
+    );
+  }
+
   return (
     <>
-      <StatusBar 
-        backgroundColor="transparent"
-        barStyle="dark-content"
-        translucent={true}
+      <StatusBar
+        backgroundColor={currentTheme === "dark" ? "#000000" : "#fafafa"}
+        barStyle={currentTheme === "dark" ? "light-content" : "dark-content"}
+        translucent={false}
       />
-      <GradientBackground>
-        {renderContent()}
-      </GradientBackground>
+      {renderContent()}
     </>
   );
 }
 
-const windowWidth = Dimensions.get('window').width;
+const windowWidth = Dimensions.get("window").width;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -218,7 +311,7 @@ const styles = StyleSheet.create({
   },
   contentWrapper: {
     paddingHorizontal: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   borderDecoration: {
     width: windowWidth - 40,
@@ -228,23 +321,21 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 8,
     padding: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    justifyContent: "center",
+    alignItems: "center",
   },
   innerBorder: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     borderWidth: 1,
     borderRadius: 4,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
   bookCover: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     borderRadius: 4,
   },
   sanskritTitle: {
@@ -263,27 +354,27 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 15,
     fontFamily: "serif",
-    textAlign: 'center',
+    textAlign: "center",
   },
   bookAuthor: {
     fontSize: 18,
     marginVertical: 10,
     fontFamily: "serif",
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   detailsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    width: '100%',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-around",
+    width: "100%",
     marginVertical: 15,
   },
   detailItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginVertical: 5,
-    minWidth: '45%',
-    justifyContent: 'center',
+    minWidth: "45%",
+    justifyContent: "center",
   },
   detailText: {
     fontSize: 16,
@@ -292,40 +383,38 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    width: '100%',
+    width: "100%",
     marginVertical: 15,
     borderWidth: 0.5,
   },
   sectionTitle: {
     fontSize: 22,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginVertical: 15,
     fontFamily: "serif",
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
   },
   verseContainer: {
-    width: '100%',
+    width: "100%",
     borderWidth: 1,
     borderRadius: 8,
     padding: 15,
     marginBottom: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
   bookContent: {
     fontSize: 18,
     lineHeight: 30,
-    textAlign: 'left',
+    textAlign: "left",
     fontFamily: "serif",
   },
   readButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 25,
     marginTop: 10,
     borderWidth: 1,
-    borderColor: '#d19a9c',
   },
   readButtonText: {
     fontSize: 18,

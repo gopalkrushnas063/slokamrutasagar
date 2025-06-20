@@ -78,8 +78,7 @@ const booksData = [
     title: "Bhagavad Gita Chapter 1",
     category: "shlokas",
     author: "Krishna",
-    image:
-      "https://asanaathome.com/wp-content/uploads/2023/12/bhagavad-gita-quotes-on-positive-thinking-1-1536x878.jpeg",
+    image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
     rating: 4.8,
   },
   {
@@ -87,7 +86,7 @@ const booksData = [
     title: "Rig Veda Mantras\n",
     category: "vedas",
     author: "Ancient Sages",
-    image: "https://ebnw.net/wp-content/uploads/2017/01/Rig-Veda.jpg",
+    image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
     rating: 4.9,
   },
   {
@@ -95,8 +94,7 @@ const booksData = [
     title: "Krishna Leela",
     category: "stories",
     author: "Vyasa",
-    image:
-      "https://www.jkyog.org/blog/content/images/size/w2000/2024/08/Krishna-Leelas---Cover.png",
+    image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
     rating: 4.7,
   },
   {
@@ -104,8 +102,7 @@ const booksData = [
     title: "Srimad Bhagbatam",
     category: "bhagbat",
     author: "Vyasa",
-    image:
-      "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=150&h=200&fit=crop",
+    image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
     rating: 4.9,
   },
   {
@@ -113,8 +110,7 @@ const booksData = [
     title: "Gayatri Mantra",
     category: "mantras",
     author: "Vishwamitra",
-    image:
-      "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=150&h=200&fit=crop",
+    image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
     rating: 4.8,
   },
   {
@@ -122,8 +118,7 @@ const booksData = [
     title: "Hanuman Chalisa",
     category: "shlokas",
     author: "Tulsidas",
-    image:
-      "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=150&h=200&fit=crop",
+    image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
     rating: 4.9,
   },
   {
@@ -131,8 +126,7 @@ const booksData = [
     title: "Ramayana Stories",
     category: "stories",
     author: "Valmiki",
-    image:
-      "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=150&h=200&fit=crop",
+    image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
     rating: 4.8,
   },
   {
@@ -140,8 +134,7 @@ const booksData = [
     title: "Sama Veda",
     category: "vedas",
     author: "Ancient Sages",
-    image:
-      "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=150&h=200&fit=crop",
+    image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
     rating: 4.7,
   },
   {
@@ -149,8 +142,7 @@ const booksData = [
     title: "Vishnu Sahasranamam",
     category: "shlokas",
     author: "Vyasa",
-    image:
-      "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=150&h=200&fit=crop",
+    image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
     rating: 4.9,
   },
 ];
@@ -286,7 +278,9 @@ export default function HomeScreen() {
             {
               backgroundColor:
                 index === currentCarouselIndex
-                  ? "#FFA500"
+                  ? currentTheme == "dark"
+                    ? "#FFA500"
+                    : "#922033"
                   : "rgba(255, 255, 255, 0.5)",
             },
           ]}
@@ -357,7 +351,7 @@ export default function HomeScreen() {
       ]}
     >
       <Image
-        source={{ uri: item.image }}
+        source={item.image} // This is now a local require
         style={styles.bookImage}
         resizeMode="cover"
       />
@@ -420,7 +414,7 @@ export default function HomeScreen() {
           <Ionicons
             name="bookmarks"
             size={15}
-            color={currentTheme === "dark" ? "yellow" : "#922033"}
+            color={currentTheme === "dark" ? "#FFA500" : "#922033"}
           />
         </View>
       </LinearGradient>

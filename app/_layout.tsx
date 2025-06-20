@@ -14,6 +14,7 @@ export default function RootLayout() {
             <Stack.Screen name="index" />
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="pages/bookdetails" />
+            <Stack.Screen name="pages/reading" />
           </Stack>
         </ThemeProvider>
       </PersistGate>
