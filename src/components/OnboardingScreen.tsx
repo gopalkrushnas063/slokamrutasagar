@@ -1,5 +1,8 @@
-import { Audio } from "expo-av"; // Import Audio from expo-av
+import { Ionicons } from "@expo/vector-icons";
+import { Audio } from "expo-av";
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dimensions,
   FlatList,
@@ -12,63 +15,88 @@ import {
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { useTheme } from "../context/ThemeContext";
+import { setLanguage } from "../store/slices/languageSlice";
 import { completeOnboarding } from "../store/slices/onboardingSlice";
 import { GradientBackground } from "../styles/themes";
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 interface OnboardingItem {
   id: string;
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
   emoji: any;
 }
 
 const onboardingData: OnboardingItem[] = [
   {
     id: "1",
-    title: "Welcome to the Divine Journey!",
-    description:
-      "Explore the sacred world of Jagannath, Krishna, and the rich heritage of Bhagabat Sanskriti. Immerse yourself in timeless stories, teachings, and cultural traditions that inspire the soul.",
+    titleKey: "onboarding.screen1.title",
+    descriptionKey: "onboarding.screen1.description",
     emoji: require("@/assets/images/app_logo.png"),
   },
   {
     id: "2",
-    title: "Hindu Shlokas with Simple Meanings",
-    description:
-      "Discover a collection of powerful Hindu shlokas from the Vedas, Gita, Upanishads, and more — explained in a simple, easy-to-understand way. Perfect for beginners and spiritual seekers who wish to learn and connect deeply with ancient wisdom.",
+    titleKey: "onboarding.screen2.title",
+    descriptionKey: "onboarding.screen2.description",
     emoji: require("@/assets/images/ob_1.png"),
   },
   {
     id: "3",
-    title: "Hindu Divine Spirituality — Illuminating Human Life",
-    description: "Embark on a spiritual journey rooted in the wisdom of Hinduism. Discover how divine teachings, sacred shlokas, and timeless traditions bring clarity, peace, and purpose to everyday life. Let ancient light guide your modern path.",
+    titleKey: "onboarding.screen3.title",
+    descriptionKey: "onboarding.screen3.description",
     emoji: require("@/assets/images/ob_2.png"),
   },
-  // {
-  //   id: "4",
-  //   title: "Get Started",
-  //   description: "You're all set! Start exploring the app",
-  //   emoji: require("@/assets/images/ob_3.png"),
-  // },
+];
+
+const languages = [
+  { code: "en", name: "English", flag: "🇬🇧" },
+  { code: "hi", name: "हिंदी", flag: "🇮🇳" },
+  { code: "or", name: "ଓଡ଼ିଆ", flag: "🇮🇳" },
+  { code: "bn", name: "বাংলা", flag: "🇧🇩" },
 ];
 
 export const OnboardingScreen: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [sound, setSound] = useState<Audio.Sound>();
+  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+
+  const languageButtonRef = useRef<null | View>(null);
   const dispatch = useDispatch();
   const theme = useTheme();
   const flatListRef = useRef<FlatList>(null);
+
   const viewabilityConfig = useRef({
     itemVisiblePercentThreshold: 50,
   }).current;
 
-  // Load the sound when component mounts
+  const measureLanguageButton = () => {
+    if (languageButtonRef.current) {
+      languageButtonRef.current.measureInWindow(
+        (x: any, y: any, width: any, height: any) => {
+          setDropdownPosition({
+            top: y + height + 10,
+            left: x,
+          });
+        }
+      );
+    }
+  };
+
+  const toggleLanguageDropdown = () => {
+    if (!showLanguageDropdown) {
+      measureLanguageButton();
+    }
+    setShowLanguageDropdown(!showLanguageDropdown);
+  };
+
   useEffect(() => {
     async function loadSound() {
       const { sound } = await Audio.Sound.createAsync(
-        require("../../assets/sounds/bg_2.mp3"), // Make sure to add this file to your assets
+        require("../../assets/sounds/bg_2.mp3"),
         { shouldPlay: false, isLooping: true }
       );
       setSound(sound);
@@ -83,7 +111,6 @@ export const OnboardingScreen: React.FC = () => {
     };
   }, []);
 
-  // Play or pause the sound when isPlaying changes
   useEffect(() => {
     if (!sound) return;
 
@@ -118,6 +145,12 @@ export const OnboardingScreen: React.FC = () => {
     dispatch(completeOnboarding());
   };
 
+  const changeLanguage = (lng: string) => {
+    dispatch(setLanguage(lng)); // Dispatch to Redux
+    i18n.changeLanguage(lng); // Update i18n
+    setShowLanguageDropdown(false);
+  };
+
   const onViewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
       if (viewableItems.length > 0 && viewableItems[0].index !== null) {
@@ -128,13 +161,10 @@ export const OnboardingScreen: React.FC = () => {
 
   const renderItem = ({ item }: { item: OnboardingItem }) => (
     <View style={[styles.slide, { width }]}>
-      {/* <Text style={styles.emoji}>{item.emoji}</Text> */}
       <Image source={item.emoji} style={{ height: 200, width: 200 }} />
-      <Text style={[styles.title, { color: "black" }]}>
-        {item.title}
-      </Text>
-      <Text style={[styles.description, { color: "black" }]}>
-        {item.description}
+      <Text style={[styles.title, { color: "#922033" }]}>{t(item.titleKey)}</Text>
+      <Text style={[styles.description, { color: "#922033" }]}>
+        {t(item.descriptionKey)}
       </Text>
     </View>
   );
@@ -148,7 +178,7 @@ export const OnboardingScreen: React.FC = () => {
             styles.dot,
             {
               backgroundColor:
-                index === currentIndex ? "#FFA500" : "rgba(255, 255, 255, 0.3)",
+                index === currentIndex ? "#922033" : "rgba(255, 255, 255, 0.3)",
             },
           ]}
         />
@@ -159,24 +189,74 @@ export const OnboardingScreen: React.FC = () => {
   return (
     <GradientBackground>
       <View style={styles.container}>
-        {/* Background Image in Top-Right Corner */}
         <Image
-          source={require("@/assets/images/m4.png")} // Replace with your image path
+          source={require("@/assets/images/m4.png")}
           style={styles.backgroundImage}
           resizeMode="contain"
         />
-        {/* Music toggle button */}
+
         <TouchableOpacity style={styles.musicButton} onPress={togglePlayPause}>
           <Text style={[styles.musicIcon, { color: theme.text.color }]}>
             {isPlaying ? "🎵" : "🎶"}
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-          <Text style={[styles.skipText, { color: "black" }]}>
-            Skip
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.topButtonsContainer}>
+          <TouchableOpacity
+            ref={languageButtonRef}
+            style={styles.languageButton}
+            onPress={toggleLanguageDropdown}
+          >
+            <Ionicons name="language" size={24} color="#922033" />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
+            <Text style={[styles.skipText, { color: "#922033" }]}>
+              {t("common.skip")}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {showLanguageDropdown && (
+          <LinearGradient
+            colors={["#fafafa", "#d19a9c"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[
+              styles.languageDropdown,
+              {
+                top: dropdownPosition.top,
+                left: dropdownPosition.left,
+                shadowColor: theme.text.color,
+              },
+            ]}
+          >
+            {languages.map((lang) => (
+              <TouchableOpacity
+                key={lang.code}
+                style={styles.languageOption}
+                onPress={() => changeLanguage(lang.code)}
+              >
+                <Text
+                  style={[
+                    styles.languageText,
+                    {
+                      color:
+                        i18n.language === lang.code
+                          ? "#922033"
+                          : theme.text.color,
+                    },
+                  ]}
+                >
+                  {lang.name}
+                </Text>
+                {i18n.language === lang.code && (
+                  <Ionicons name="checkmark" size={20} color="#922033" />
+                )}
+              </TouchableOpacity>
+            ))}
+          </LinearGradient>
+        )}
 
         <FlatList
           ref={flatListRef}
@@ -200,8 +280,8 @@ export const OnboardingScreen: React.FC = () => {
         >
           <Text style={[styles.nextButtonText, theme.buttonText]}>
             {currentIndex === onboardingData.length - 1
-              ? "Get Started"
-              : "Next"}
+              ? t("common.getStarted")
+              : t("common.next")}
           </Text>
         </TouchableOpacity>
       </View>
@@ -217,10 +297,21 @@ const styles = StyleSheet.create({
   backgroundImage: {
     position: "absolute",
     top: 0,
-    alignSelf: "center", // This centers the image horizontally
-    width: 220, // Adjust as needed
-    height: 100, // Adjust as needed
-    // opacity: 0.3, // Optional: Adjust opacity if needed
+    alignSelf: "center",
+    width: 220,
+    height: 100,
+  },
+  topButtonsContainer: {
+    position: "absolute",
+    top: 50,
+    right: 20,
+    zIndex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  languageButton: {
+    padding: 10,
+    marginRight: 10,
   },
   musicButton: {
     position: "absolute",
@@ -233,26 +324,38 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   skipButton: {
-    position: "absolute",
-    top: 50,
-    right: 20,
-    zIndex: 1,
     padding: 10,
   },
   skipText: {
     fontSize: 16,
     fontWeight: "600",
   },
+  languageDropdown: {
+    position: "absolute",
+    width: 100,
+    borderRadius: 8,
+    padding: 8,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    zIndex: 1,
+  },
+  languageOption: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  languageText: {
+    fontSize: 16,
+  },
   slide: {
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
-  },
-  emoji: {
-    fontSize: 80,
-    marginBottom: 30,
-    textAlign: "center",
   },
   title: {
     fontSize: 28,

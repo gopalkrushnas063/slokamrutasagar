@@ -1,0 +1,58 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "next": "Next",
+    "skip": "Skip",
+    "getStarted": "Get Started",
+    "language": "Language",
+    "cancel": "Cancel",
+    "reset": "Reset",
+    "current": "Current",
+    "comingSoon": "Coming soon!"
+  },
+  "onboarding": {
+    "screen1": {
+      "title": "Welcome to the Divine Journey!",
+      "description": "Explore the sacred world of Jagannath, Krishna, and the rich heritage of Bhagabat Sanskriti. Immerse yourself in timeless stories, teachings, and cultural traditions that inspire the soul."
+    },
+    "screen2": {
+      "title": "Hindu Shlokas with Simple Meanings",
+      "description": "Discover a collection of powerful Hindu shlokas from the Vedas, Gita, Upanishads, and more — explained in a simple, easy-to-understand way. Perfect for beginners and spiritual seekers who wish to learn and connect deeply with ancient wisdom."
+    },
+    "screen3": {
+      "title": "Hindu Divine Spirituality — Illuminating Human Life",
+      "description": "Embark on a spiritual journey rooted in the wisdom of Hinduism. Discover how divine teachings, sacred shlokas, and timeless traditions bring clarity, peace, and purpose to everyday life. Let ancient light guide your modern path."
+    }
+  },
+  "home": {
+    "greeting": "Hare Krishna 🙏",
+    "title": "Spiritual Journey",
+    "categories": "Categories",
+    "allBooks": "All Books"
+  },
+  "bookmark": {
+    "title": "Bookmarks 📚",
+    "emptyState": {
+      "title": "No bookmarks yet",
+      "description": "Your saved items will appear here"
+    }
+  },
+  "settings": {
+    "title": "Settings ⚙️",
+    "appearance": "Appearance",
+    "theme": "Theme",
+    "darkMode": "Dark Mode",
+    "gradientTheme": "Gradient Theme",
+    "app": "App",
+    "resetOnboarding": "Reset Onboarding",
+    "about": "About",
+    "help": "Help & Support",
+    "language": "Language"
+  },
+  "languages": {
+    "english": "English",
+    "hindi": "Hindi",
+    "odia": "Odia",
+    "bengali": "Bengali"
+  }
+}

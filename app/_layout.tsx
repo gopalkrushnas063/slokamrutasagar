@@ -1,3 +1,4 @@
+// app/_layout.tsx
 import { Stack } from "expo-router";
 import { Provider } from 'react-redux';
 import { store, persistor } from '../src/store';
@@ -11,7 +12,8 @@ export default function RootLayout() {
         <ThemeProvider>
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="index" />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="pages/bookdetails" />
           </Stack>
         </ThemeProvider>
       </PersistGate>
