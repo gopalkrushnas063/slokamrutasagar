@@ -1,128 +1,140 @@
-import React, { useState, useRef } from "react";
-import { 
-  Text, 
-  TouchableOpacity, 
-  View, 
-  ScrollView, 
-  FlatList, 
-  Image, 
+import { Ionicons } from "@expo/vector-icons";
+import React, { useRef, useState } from "react";
+import {
   Dimensions,
-  ViewToken 
+  FlatList,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewToken,
 } from "react-native";
-import { useTheme } from '../../src/context/ThemeContext';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../src/store';
-import { toggleTheme, setTheme } from '../../src/store/slices/themeSlice';
-import { GradientBackground } from '../../src/styles/themes';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch, useSelector } from "react-redux";
+import { useTheme } from "../../src/context/ThemeContext";
+import { RootState } from "../../src/store";
+import { toggleTheme } from "../../src/store/slices/themeSlice";
+import { GradientBackground } from "../../src/styles/themes";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 // Sample carousel data
 const carouselData = [
   {
-    id: '1',
-    title: 'Bhagavad Gita',
-    subtitle: 'Divine Wisdom',
-    image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop', // Replace with your images
+    id: "1",
+    title: "Bhagavad Gita",
+    subtitle: "Divine Wisdom",
+    image:
+      "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop", // Replace with your images
   },
   {
-    id: '2',
-    title: 'Vedic Mantras',
-    subtitle: 'Sacred Sounds',
-    image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=200&fit=crop',
+    id: "2",
+    title: "Vedic Mantras",
+    subtitle: "Sacred Sounds",
+    image:
+      "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=200&fit=crop",
   },
   {
-    id: '3',
-    title: 'Krishna Stories',
-    subtitle: 'Divine Tales',
-    image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop',
+    id: "3",
+    title: "Krishna Stories",
+    subtitle: "Divine Tales",
+    image:
+      "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
   },
 ];
 
 // Categories data
 const categories = [
-  { id: 'all', name: 'All', icon: 'grid-outline' },
-  { id: 'shlokas', name: 'Shlokas', icon: 'library-outline' },
-  { id: 'vedas', name: 'Vedas', icon: 'book-outline' },
-  { id: 'bhagbat', name: 'Bhagbat', icon: 'heart-outline' },
-  { id: 'stories', name: 'Stories', icon: 'chatbubbles-outline' },
-  { id: 'mantras', name: 'Mantras', icon: 'musical-notes-outline' },
+  { id: "all", name: "All", icon: "grid-outline" },
+  { id: "shlokas", name: "Shlokas", icon: "library-outline" },
+  { id: "vedas", name: "Vedas", icon: "book-outline" },
+  { id: "bhagbat", name: "Bhagbat", icon: "heart-outline" },
+  { id: "stories", name: "Stories", icon: "chatbubbles-outline" },
+  { id: "mantras", name: "Mantras", icon: "musical-notes-outline" },
 ];
 
 // Sample books data
 const booksData = [
   {
-    id: '1',
-    title: 'Bhagavad Gita Chapter 1',
-    category: 'shlokas',
-    author: 'Krishna',
-    image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=150&h=200&fit=crop',
+    id: "1",
+    title: "Bhagavad Gita Chapter 1",
+    category: "shlokas",
+    author: "Krishna",
+    image:
+      "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=150&h=200&fit=crop",
     rating: 4.8,
   },
   {
-    id: '2',
-    title: 'Rig Veda Mantras',
-    category: 'vedas',
-    author: 'Ancient Sages',
-    image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=150&h=200&fit=crop',
+    id: "2",
+    title: "Rig Veda Mantras",
+    category: "vedas",
+    author: "Ancient Sages",
+    image:
+      "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=150&h=200&fit=crop",
     rating: 4.9,
   },
   {
-    id: '3',
-    title: 'Krishna Leela',
-    category: 'stories',
-    author: 'Vyasa',
-    image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=150&h=200&fit=crop',
+    id: "3",
+    title: "Krishna Leela",
+    category: "stories",
+    author: "Vyasa",
+    image:
+      "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=150&h=200&fit=crop",
     rating: 4.7,
   },
   {
-    id: '4',
-    title: 'Srimad Bhagbatam',
-    category: 'bhagbat',
-    author: 'Vyasa',
-    image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=150&h=200&fit=crop',
+    id: "4",
+    title: "Srimad Bhagbatam",
+    category: "bhagbat",
+    author: "Vyasa",
+    image:
+      "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=150&h=200&fit=crop",
     rating: 4.9,
   },
   {
-    id: '5',
-    title: 'Gayatri Mantra',
-    category: 'mantras',
-    author: 'Vishwamitra',
-    image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=150&h=200&fit=crop',
+    id: "5",
+    title: "Gayatri Mantra",
+    category: "mantras",
+    author: "Vishwamitra",
+    image:
+      "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=150&h=200&fit=crop",
     rating: 4.8,
   },
   {
-    id: '6',
-    title: 'Hanuman Chalisa',
-    category: 'shlokas',
-    author: 'Tulsidas',
-    image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=150&h=200&fit=crop',
+    id: "6",
+    title: "Hanuman Chalisa",
+    category: "shlokas",
+    author: "Tulsidas",
+    image:
+      "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=150&h=200&fit=crop",
     rating: 4.9,
   },
   {
-    id: '7',
-    title: 'Ramayana Stories',
-    category: 'stories',
-    author: 'Valmiki',
-    image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=150&h=200&fit=crop',
+    id: "7",
+    title: "Ramayana Stories",
+    category: "stories",
+    author: "Valmiki",
+    image:
+      "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=150&h=200&fit=crop",
     rating: 4.8,
   },
   {
-    id: '8',
-    title: 'Sama Veda',
-    category: 'vedas',
-    author: 'Ancient Sages',
-    image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=150&h=200&fit=crop',
+    id: "8",
+    title: "Sama Veda",
+    category: "vedas",
+    author: "Ancient Sages",
+    image:
+      "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=150&h=200&fit=crop",
     rating: 4.7,
   },
   {
-    id: '9',
-    title: 'Vishnu Sahasranamam',
-    category: 'shlokas',
-    author: 'Vyasa',
-    image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=150&h=200&fit=crop',
+    id: "9",
+    title: "Vishnu Sahasranamam",
+    category: "shlokas",
+    author: "Vyasa",
+    image:
+      "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=150&h=200&fit=crop",
     rating: 4.9,
   },
 ];
@@ -130,21 +142,28 @@ const booksData = [
 export default function HomeScreen() {
   const theme = useTheme();
   const dispatch = useDispatch();
-  const currentTheme = useSelector((state: RootState) => state.theme.currentTheme);
-  
+  const currentTheme = useSelector(
+    (state: RootState) => state.theme.currentTheme
+  );
+
   const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const carouselRef = useRef<FlatList>(null);
 
   // Filter books based on selected category
-  const filteredBooks = selectedCategory === 'all' 
-    ? booksData 
-    : booksData.filter(book => book.category === selectedCategory);
+  const filteredBooks =
+    selectedCategory === "all"
+      ? booksData
+      : booksData.filter((book) => book.category === selectedCategory);
 
   // Carousel item renderer
-  const renderCarouselItem = ({ item }: { item: typeof carouselData[0] }) => (
+  const renderCarouselItem = ({ item }: { item: (typeof carouselData)[0] }) => (
     <View style={styles.carouselItem}>
-      <Image source={{ uri: item.image }} style={styles.carouselImage} resizeMode="cover" />
+      <Image
+        source={{ uri: item.image }}
+        style={styles.carouselImage}
+        resizeMode="cover"
+      />
       <View style={styles.carouselOverlay}>
         <Text style={styles.carouselTitle}>{item.title}</Text>
         <Text style={styles.carouselSubtitle}>{item.subtitle}</Text>
@@ -161,7 +180,10 @@ export default function HomeScreen() {
           style={[
             styles.dot,
             {
-              backgroundColor: index === currentCarouselIndex ? '#FFA500' : 'rgba(255, 255, 255, 0.5)',
+              backgroundColor:
+                index === currentCarouselIndex
+                  ? "#FFA500"
+                  : "rgba(255, 255, 255, 0.5)",
             },
           ]}
         />
@@ -170,93 +192,119 @@ export default function HomeScreen() {
   );
 
   // Category item renderer
-  const renderCategoryItem = ({ item }: { item: typeof categories[0] }) => (
+  const renderCategoryItem = ({ item }: { item: (typeof categories)[0] }) => (
     <TouchableOpacity
       style={[
         styles.categoryItem,
         {
-          backgroundColor: selectedCategory === item.id 
-            ? (currentTheme === 'dark' ? '#FFA500' : '#FF8C00')
-            : (currentTheme === 'dark' ? '#2a2a2a' : 'rgba(255, 255, 255, 0.8)'),
-          borderColor: selectedCategory === item.id ? '#FFA500' : 'transparent',
+          backgroundColor:
+            selectedCategory === item.id
+              ? currentTheme === "dark"
+                ? "#FFA500"
+                : "#e0b5b6"
+              : currentTheme === "dark"
+              ? "#2a2a2a"
+              : "rgba(255, 255, 255, 0.8)",
+          borderColor: selectedCategory === item.id ? currentTheme === "dark"
+              ? "#FFA500" : "#c07e7e" : "transparent",
         },
       ]}
       onPress={() => setSelectedCategory(item.id)}
     >
-      <Ionicons 
-        name={item.icon as any} 
-        size={20} 
-        color={selectedCategory === item.id ? '#fff' : theme.text.color} 
+      <Ionicons
+        name={item.icon as any}
+        size={20}
+        color={selectedCategory === item.id ? "#fff" : theme.text.color}
       />
-      <Text style={[
-        styles.categoryText,
-        {
-          color: selectedCategory === item.id ? '#fff' : theme.text.color,
-          fontWeight: selectedCategory === item.id ? 'bold' : 'normal',
-        }
-      ]}>
+      <Text
+        style={[
+          styles.categoryText,
+          {
+            color: selectedCategory === item.id ? "#fff" : theme.text.color,
+            fontWeight: selectedCategory === item.id ? "bold" : "normal",
+          },
+        ]}
+      >
         {item.name}
       </Text>
     </TouchableOpacity>
   );
 
   // Book item renderer
-  const renderBookItem = ({ item }: { item: typeof booksData[0] }) => (
-    <TouchableOpacity style={[
-      styles.bookItem,
-      {
-        backgroundColor: currentTheme === 'dark' ? '#2a2a2a' : 'rgba(255, 255, 255, 0.9)',
-        shadowColor: currentTheme === 'dark' ? '#000' : '#000',
-      }
-    ]}>
-      <Image source={{ uri: item.image }} style={styles.bookImage} resizeMode="cover" />
-      <View style={styles.bookInfo}>
-        <Text style={[styles.bookTitle, theme.text]} numberOfLines={2}>
+  const renderBookItem = ({ item }: { item: (typeof booksData)[0] }) => (
+    <TouchableOpacity
+      style={[
+        styles.bookItem,
+        {
+          backgroundColor:
+            currentTheme === "dark" ? "#2a2a2a" : "rgba(255, 255, 255, 0.9)",
+          shadowColor: currentTheme === "dark" ? "#000" : "#000",
+        },
+      ]}
+    >
+      <Image
+        source={{ uri: item.image }}
+        style={styles.bookImage}
+        resizeMode="cover"
+      />
+      <LinearGradient
+        colors={["#fafafa", "#d19a9c"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.bookInfo}
+      >
+        <Text style={[styles.bookTitle, { color: "#333" }]} numberOfLines={2}>
           {item.title}
         </Text>
-        <Text style={[styles.bookAuthor, { color: theme.text.color, opacity: 0.7 }]} numberOfLines={1}>
+        <Text style={[styles.bookAuthor, { color: "#555" }]} numberOfLines={1}>
           {item.author}
         </Text>
         <View style={styles.ratingContainer}>
           <Ionicons name="star" size={14} color="#FFA500" />
-          <Text style={[styles.rating, { color: theme.text.color }]}>
-            {item.rating}
-          </Text>
+          <Text style={[styles.rating, { color: "#333" }]}>{item.rating}</Text>
         </View>
-      </View>
+      </LinearGradient>
     </TouchableOpacity>
   );
 
   // Handle carousel scroll
-  const onCarouselViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
-    if (viewableItems.length > 0 && viewableItems[0].index !== null) {
-      setCurrentCarouselIndex(viewableItems[0].index);
+  const onCarouselViewableItemsChanged = useRef(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      if (viewableItems.length > 0 && viewableItems[0].index !== null) {
+        setCurrentCarouselIndex(viewableItems[0].index);
+      }
     }
-  }).current;
+  ).current;
 
   const viewabilityConfig = useRef({
     itemVisiblePercentThreshold: 50,
   }).current;
 
   const renderContent = () => (
-    <SafeAreaView edges={['top']} style={[theme.container, { flex: 1 }]}>
+    <SafeAreaView edges={["top"]} style={[theme.container, { flex: 1 }]}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
           <View>
             <Text style={[theme.text, styles.greeting]}>🙏 Namaste</Text>
-            <Text style={[theme.text, styles.headerTitle]}>Spiritual Journey</Text>
+            <Text style={[theme.text, styles.headerTitle]}>
+              Spiritual Journey
+            </Text>
           </View>
           <TouchableOpacity
-            style={[styles.themeButton, {
-              backgroundColor: currentTheme === 'dark' ? '#333' : 'rgba(255, 255, 255, 0.8)'
-            }]}
+            style={[
+              styles.themeButton,
+              {
+                backgroundColor:
+                  currentTheme === "dark" ? "#333" : "rgba(255, 255, 255, 0.8)",
+              },
+            ]}
             onPress={() => dispatch(toggleTheme())}
           >
-            <Ionicons 
-              name={currentTheme === 'dark' ? 'sunny' : 'moon'} 
-              size={24} 
-              color={theme.text.color} 
+            <Ionicons
+              name={currentTheme === "dark" ? "sunny" : "moon"}
+              size={24}
+              color={theme.text.color}
             />
           </TouchableOpacity>
         </View>
@@ -292,14 +340,18 @@ export default function HomeScreen() {
 
         {/* Books Grid */}
         <View style={styles.booksContainer}>
-          <View style={styles.booksHeader}>
+          {/* <View style={styles.booksHeader}>
             <Text style={[theme.text, styles.sectionTitle]}>
-              {selectedCategory === 'all' ? 'All Books' : `${categories.find(cat => cat.id === selectedCategory)?.name} Books`}
+              {selectedCategory === "all"
+                ? "All Books"
+                : `${
+                    categories.find((cat) => cat.id === selectedCategory)?.name
+                  } Books`}
             </Text>
             <Text style={[theme.text, styles.booksCount]}>
               {filteredBooks.length} books
             </Text>
-          </View>
+          </View> */}
           <FlatList
             data={filteredBooks}
             renderItem={renderBookItem}
@@ -314,20 +366,21 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 
-  if (currentTheme === 'gradient') {
+  if (currentTheme === "gradient") {
     return <GradientBackground>{renderContent()}</GradientBackground>;
   }
 
   return renderContent();
 }
 
-import { StyleSheet } from 'react-native';
+import { LinearGradient } from "expo-linear-gradient";
+import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 20,
     paddingTop: 10,
     paddingBottom: 20,
@@ -338,7 +391,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 5,
   },
   themeButton: {
@@ -357,36 +410,36 @@ const styles = StyleSheet.create({
     height: 180,
     marginHorizontal: 20,
     borderRadius: 15,
-    overflow: 'hidden',
-    position: 'relative',
+    overflow: "hidden",
+    position: "relative",
   },
   carouselImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   carouselOverlay: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
     padding: 20,
   },
   carouselTitle: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 5,
   },
   carouselSubtitle: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 14,
     opacity: 0.9,
   },
   dotsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 15,
   },
   dot: {
@@ -400,16 +453,17 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     paddingHorizontal: 20,
     marginBottom: 15,
   },
   categoriesList: {
     paddingHorizontal: 20,
+    paddingVertical: 5,
   },
   categoryItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 25,
@@ -423,16 +477,16 @@ const styles = StyleSheet.create({
   categoryText: {
     marginLeft: 8,
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   booksContainer: {
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
   booksHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 15,
   },
   booksCount: {
@@ -443,22 +497,22 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   bookRow: {
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   bookItem: {
     flex: 1,
-    maxWidth: '48%' as any,
-    backgroundColor: '#fff',
+    maxWidth: "48%" as any,
+    backgroundColor: "#fff",
     borderRadius: 12,
     marginBottom: 20,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 5,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   bookImage: {
-    width: '100%' as any,
+    width: "100%" as any,
     height: 120,
   },
   bookInfo: {
@@ -466,7 +520,7 @@ const styles = StyleSheet.create({
   },
   bookTitle: {
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 4,
     lineHeight: 18,
   },
@@ -475,12 +529,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   rating: {
     fontSize: 12,
     marginLeft: 4,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });
