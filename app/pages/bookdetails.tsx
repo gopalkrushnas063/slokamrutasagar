@@ -1,9 +1,10 @@
-// app/pages/bookdetails.tsx
+import RectangularMandalaBorder from "@/src/components/decorative/RectangularMandalaBorder";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React from "react";
 import {
   Dimensions,
+  FlatList,
   Image,
   Platform,
   ScrollView,
@@ -18,22 +19,9 @@ import { useSelector } from "react-redux";
 import { useTheme } from "../../src/context/ThemeContext";
 import { RootState } from "../../src/store";
 import { GradientBackground } from "../../src/styles/themes";
+import { bhagavadGitaData, getAllVerses } from "../../src/data/bhagavadGitaData";
 
-// Sample book data
-const sampleBookData = {
-  id: "1",
-  title: "Bhagavad Gita",
-  subtitle: "Chapter 1 - Arjuna Vishada Yoga",
-  author: "Sri Krishna",
-  image: require("@/assets/images/m1.png"),
-  rating: 4.8,
-  content: `Dhritarashtra uvacha
-Dharma-kshetre kuru-kshetre samaveta yuyutsavah
-Mamakah pandavashchaiva kimakurvata sanjaya`,
-  chapters: 18,
-  language: "Sanskrit",
-  verseCount: 47,
-};
+const windowWidth = Dimensions.get("window").width;
 
 export default function BookDetailsScreen() {
   const navigation = useNavigation();
@@ -43,10 +31,9 @@ export default function BookDetailsScreen() {
     (state: RootState) => state.theme.currentTheme
   );
 
-  // Get book data
-  const book = sampleBookData;
+  const book = bhagavadGitaData;
+  const allVerses = getAllVerses();
 
-  // Theme-based styles
   const getDynamicStyles = () => {
     if (currentTheme === "dark") {
       return {
@@ -110,9 +97,34 @@ export default function BookDetailsScreen() {
 
   const dynamicStyles = getDynamicStyles();
 
+  const renderVerseItem = ({ item }: { item: any }) => (
+    <TouchableOpacity
+      onPress={() =>
+        router.push({
+          pathname: "/pages/reading",
+          params: {
+            id: book.id,
+            chapter: item.chapter,
+            verse: item.verse,
+          },
+        })
+      }
+      style={[styles.verseItemContainer, dynamicStyles.borderColor]}
+    >
+      <View style={styles.verseHeader}>
+        <Text style={[styles.verseNumber, dynamicStyles.textColor]}>
+          Slok {item.chapter}.{item.verse}
+        </Text>
+        <View style={styles.separatorLine} />
+      </View>
+      <Text style={[styles.verseText, dynamicStyles.textColor]}>
+        {item.sanskrit.split('\n')[0]}...
+      </Text>
+    </TouchableOpacity>
+  );
+
   const renderContent = () => (
     <View style={[styles.container, dynamicStyles.backgroundStyle]}>
-      {/* Header with Back Button */}
       <SafeAreaView
         edges={["top"]}
         style={{
@@ -137,13 +149,11 @@ export default function BookDetailsScreen() {
         </View>
       </SafeAreaView>
 
-      {/* Scrollable Content */}
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Traditional Indian pattern border */}
         <View
           style={[
             styles.borderDecoration,
@@ -151,6 +161,14 @@ export default function BookDetailsScreen() {
             { backgroundColor: dynamicStyles.borderDecorationBg },
           ]}
         >
+          <RectangularMandalaBorder
+            width={windowWidth - 40}
+            height={300}
+            color={dynamicStyles.iconColor}
+            strokeWidth={1.5}
+            cornerRadius={8}
+          />
+
           <View
             style={[
               styles.innerBorder,
@@ -162,9 +180,9 @@ export default function BookDetailsScreen() {
               source={book.image}
               style={[
                 styles.bookCover,
-                currentTheme === "dark" ? { tintColor: "#ffffff" } : {},
+                currentTheme === "dark" ? { } : {},
               ]}
-              resizeMode="contain"
+              resizeMode="cover"
             />
           </View>
         </View>
@@ -177,7 +195,7 @@ export default function BookDetailsScreen() {
             {book.title}
           </Text>
           <Text style={[styles.bookSubtitle, dynamicStyles.textColor]}>
-            {book.subtitle}
+            {book.chapters[0].title} (Chapter 1)
           </Text>
 
           <View style={[styles.divider, dynamicStyles.borderColor]} />
@@ -190,7 +208,7 @@ export default function BookDetailsScreen() {
             <View style={styles.detailItem}>
               <Ionicons name="book" size={18} color={dynamicStyles.iconColor} />
               <Text style={[styles.detailText, dynamicStyles.textColor]}>
-                {book.chapters} अध्याय
+                {book.chapters.length} अध्याय
               </Text>
             </View>
             <View style={styles.detailItem}>
@@ -212,7 +230,7 @@ export default function BookDetailsScreen() {
             <View style={styles.detailItem}>
               <Ionicons name="list" size={18} color={dynamicStyles.iconColor} />
               <Text style={[styles.detailText, dynamicStyles.textColor]}>
-                {book.verseCount} श्लोक
+                {book.chapters.reduce((acc, ch) => acc + ch.verseCount, 0)} श्लोक
               </Text>
             </View>
           </View>
@@ -230,16 +248,24 @@ export default function BookDetailsScreen() {
               { backgroundColor: dynamicStyles.verseContainerBg },
             ]}
           >
-            <Text style={[styles.bookContent, dynamicStyles.textColor]}>
-              {book.content}
-            </Text>
+            <FlatList
+              data={allVerses.slice(0, 5)} // Show first 5 verses
+              renderItem={renderVerseItem}
+              keyExtractor={(item) => item.id}
+              scrollEnabled={false}
+              ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+            />
           </View>
 
           <TouchableOpacity
             onPress={() =>
               router.push({
                 pathname: "/pages/reading",
-                params: { id: book.id },
+                params: {
+                  id: book.id,
+                  chapter: 1,
+                  verse: 1,
+                },
               })
             }
             style={[
@@ -285,7 +311,6 @@ export default function BookDetailsScreen() {
   );
 }
 
-const windowWidth = Dimensions.get("window").width;
 
 const styles = StyleSheet.create({
   container: {
@@ -308,6 +333,9 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 40,
     flexGrow: 1,
+  },
+  mandalaOverlay: {
+    opacity: 0.7,
   },
   contentWrapper: {
     paddingHorizontal: 20,
@@ -336,7 +364,7 @@ const styles = StyleSheet.create({
   bookCover: {
     width: "100%",
     height: "100%",
-    borderRadius: 4,
+    borderRadius: 12,
   },
   sanskritTitle: {
     fontSize: 28,
@@ -394,6 +422,43 @@ const styles = StyleSheet.create({
     fontFamily: "serif",
     alignSelf: "flex-start",
   },
+  verseItemContainer: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    backgroundColor: "rgba(255,255,255,0.1)",
+  },
+  verseHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  verseNumber: {
+    fontSize: 16,
+    fontWeight: "bold",
+    fontFamily: "serif",
+    marginRight: 8,
+  },
+  separatorLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#d19a9c",
+    opacity: 0.5,
+  },
+  verseText: {
+    fontSize: 14,
+    lineHeight: 22,
+    fontFamily: "serif",
+  },
+  verseItem: {
+    marginVertical: 8,
+  },
+  verseDivider: {
+    height: 1,
+    width: "100%",
+    marginVertical: 12,
+    borderWidth: 0.5,
+  },
   verseContainer: {
     width: "100%",
     borderWidth: 1,
@@ -402,9 +467,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   bookContent: {
-    fontSize: 18,
-    lineHeight: 30,
-    textAlign: "left",
+    fontSize: 14,
+    // lineHeight: 30,
+    textAlign: "center",
     fontFamily: "serif",
   },
   readButton: {

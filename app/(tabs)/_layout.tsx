@@ -28,14 +28,14 @@ export default function TabLayout() {
       ? "#FFA500"
       : "#007AFF";
 
-  const tabBarInactiveTintColor = currentTheme === "dark" ? "#666" : "grey";
+  const tabBarInactiveTintColor = currentTheme === "dark" ? "#666" : "#f4f4f4";
 
   // Custom tab bar background component for gradient theme
   const TabBarBackground = () => {
     if (currentTheme === "gradient") {
       return (
         <LinearGradient
-          colors={["#fafafa", "#d19a9c"]}
+          colors={["#d19a9c", "#d19a9c"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={{

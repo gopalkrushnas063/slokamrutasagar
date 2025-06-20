@@ -1,7 +1,6 @@
-// app/pages/reading.tsx
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Audio } from "expo-av";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
@@ -20,33 +19,19 @@ import { useSelector } from "react-redux";
 import { useTheme } from "../../src/context/ThemeContext";
 import { RootState } from "../../src/store";
 import { GradientBackground } from "../../src/styles/themes";
-
-// Sample verse data
-const verseData = {
-  id: "1",
-  chapter: 1,
-  verse: 1,
-  sanskrit: `धृतराष्ट्र उवाच |
-धर्मक्षेत्रे कुरुक्षेत्रे समवेता युयुत्सवः |
-मामकाः पाण्डवाश्चैव किमकुर्वत सञ्जय ||1||`,
-  transliteration: `dhṛitarāśhtra uvācha
-dharma-kṣhetre kuru-kṣhetre samavetā yuyutsavaḥ
-māmakāḥ pāṇḍavāśhchaiva kimakurvata sañjaya`,
-  translation:
-    "Dhritarashtra said: O Sanjay, after gathering on the holy field of Kurukshetra, and desiring to fight, what did my sons and the sons of Pandu do?",
-  commentary: `The two armies had gathered on the battlefield of Kurukshetra, well prepared to fight a war that was inevitable. Still, in this verse, King Dhritarashtra asked Sanjay, what his sons and his brother Pandu's sons were doing on the battlefield? It was apparent that they would fight, then why did he ask such a question?
-
-The blind King Dhritarashtra's fondness for his own sons had clouded his spiritual wisdom and deviated him from the path of virtue. He had usurped the kingdom of Hastinapur from the rightful heirs; the Pandavas, sons of his brother Pandu. Feeling guilty of the injustice he had done towards his nephews, his conscience worried him about the outcome of this battle.`,
-  audioUrl: require("@/assets/sounds/bg_2.mp3"),
-};
+import { bhagavadGitaData, getAllVerses } from "../../src/data/bhagavadGitaData";
 
 export default function ReadingScreen() {
   const navigation = useNavigation();
-  const { id } = useLocalSearchParams();
+  const { id, chapter: chapterParam, verse: verseParam } = useLocalSearchParams();
+  const chapter = Number(chapterParam) || 1;
+  const verse = Number(verseParam) || 1;
+  
   const theme = useTheme();
   const currentTheme = useSelector(
     (state: RootState) => state.theme.currentTheme
   );
+  
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [position, setPosition] = useState(0);
@@ -54,6 +39,12 @@ export default function ReadingScreen() {
   const progressAnim = useRef(new Animated.Value(0)).current;
   const progressBarWidth = useRef(0);
   const progressBarRef = useRef<View>(null);
+
+  // Get current verse data
+  const currentChapter = bhagavadGitaData.chapters.find(ch => ch.chapter === chapter);
+  const currentVerse = currentChapter?.verses.find(v => v.verse === verse);
+  const allVerses = getAllVerses();
+  const currentIndex = allVerses.findIndex(v => v.chapter === chapter && v.verse === verse);
 
   // Handle back navigation and cleanup
   useEffect(() => {
@@ -63,7 +54,6 @@ export default function ReadingScreen() {
         sound.unloadAsync();
       }
     });
-
     return unsubscribe;
   }, [navigation, sound]);
 
@@ -194,8 +184,10 @@ export default function ReadingScreen() {
         await sound.unloadAsync();
       }
 
+      if (!currentVerse?.audioUrl) return;
+
       const { sound: audioSound } = await Audio.Sound.createAsync(
-        verseData.audioUrl,
+        currentVerse.audioUrl,
         { shouldPlay: false },
         (status) => {
           if (status.isLoaded) {
@@ -241,6 +233,12 @@ export default function ReadingScreen() {
   };
 
   useEffect(() => {
+    if (currentVerse?.audioUrl) {
+      loadAudio();
+    }
+  }, [chapter, verse]);
+
+  useEffect(() => {
     const interval = setInterval(() => {
       if (isPlaying && sound) {
         sound.getStatusAsync().then((status) => {
@@ -260,6 +258,35 @@ export default function ReadingScreen() {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+  };
+
+  const navigateToVerse = (newChapter: number, newVerse: number) => {
+    router.setParams({
+      chapter: newChapter.toString(),
+      verse: newVerse.toString()
+    });
+    if (sound) {
+      sound.stopAsync();
+      sound.unloadAsync();
+      setSound(null);
+    }
+    setIsPlaying(false);
+    setPosition(0);
+    progressAnim.setValue(0);
+  };
+
+  const goToPreviousVerse = () => {
+    if (currentIndex > 0) {
+      const prevVerse = allVerses[currentIndex - 1];
+      navigateToVerse(prevVerse.chapter, prevVerse.verse);
+    }
+  };
+
+  const goToNextVerse = () => {
+    if (currentIndex < allVerses.length - 1) {
+      const nextVerse = allVerses[currentIndex + 1];
+      navigateToVerse(nextVerse.chapter, nextVerse.verse);
+    }
   };
 
   const renderContent = () => (
@@ -283,7 +310,7 @@ export default function ReadingScreen() {
             />
           </TouchableOpacity>
           <Text style={[styles.headerTitle, dynamicStyles.headerTitle]}>
-            Bhagavad Gita {verseData.chapter}.{verseData.verse}
+            Bhagavad Gita {chapter}.{verse}
           </Text>
         </View>
       </SafeAreaView>
@@ -299,7 +326,7 @@ export default function ReadingScreen() {
           >
             <View style={[styles.verseInnerBorder, dynamicStyles.borderColor]}>
               <Text style={[styles.sanskritVerse, dynamicStyles.textColor]}>
-                {verseData.sanskrit}
+                {currentVerse?.sanskrit || "Loading verse..."}
               </Text>
             </View>
           </View>
@@ -308,81 +335,88 @@ export default function ReadingScreen() {
             Transliteration
           </Text>
           <Text style={[styles.transliteration, dynamicStyles.textColor]}>
-            {verseData.transliteration}
+            {currentVerse?.transliteration || ""}
           </Text>
 
           <Text style={[styles.sectionTitle, dynamicStyles.textColor]}>
             Translation
           </Text>
           <Text style={[styles.translation, dynamicStyles.textColor]}>
-            {verseData.translation}
+            {currentVerse?.translation || ""}
           </Text>
 
           <Text style={[styles.sectionTitle, dynamicStyles.textColor]}>
             Commentary
           </Text>
           <Text style={[styles.commentary, dynamicStyles.textColor]}>
-            {verseData.commentary}
+            {currentVerse?.commentary || ""}
           </Text>
 
           {/* Audio Player */}
-          <View style={styles.audioPlayerContainer}>
-            <TouchableOpacity
-              onPress={togglePlayback}
-              style={[
-                styles.playButton,
-                { backgroundColor: dynamicStyles.playButtonBg },
-              ]}
-            >
-              <MaterialCommunityIcons
-                name={isPlaying ? "pause" : "play"}
-                size={32}
-                color={dynamicStyles.iconColor}
-              />
-            </TouchableOpacity>
-
-            <View 
-              style={styles.progressContainer}
-              ref={progressBarRef}
-              collapsable={false}
-            >
-              <View 
+          {currentVerse?.audioUrl && (
+            <View style={styles.audioPlayerContainer}>
+              <TouchableOpacity
+                onPress={togglePlayback}
                 style={[
-                  styles.progressBackground,
-                  { backgroundColor: dynamicStyles.progressBg },
+                  styles.playButton,
+                  { backgroundColor: dynamicStyles.playButtonBg },
                 ]}
-                {...panResponder.panHandlers}
               >
-                <Animated.View
-                  style={[
-                    styles.progressFill,
-                    {
-                      backgroundColor: dynamicStyles.progressFill,
-                      width: progressAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: ["0%", "100%"],
-                      }),
-                    },
-                  ]}
+                <MaterialCommunityIcons
+                  name={isPlaying ? "pause" : "play"}
+                  size={32}
+                  color={dynamicStyles.iconColor}
                 />
-              </View>
-              <View style={styles.timeContainer}>
-                <Text style={[styles.timeText, dynamicStyles.textColor]}>
-                  {formatTime(position)}
-                </Text>
-                <Text style={[styles.timeText, dynamicStyles.textColor]}>
-                  {formatTime(duration)}
-                </Text>
+              </TouchableOpacity>
+
+              <View 
+                style={styles.progressContainer}
+                ref={progressBarRef}
+                collapsable={false}
+              >
+                <View 
+                  style={[
+                    styles.progressBackground,
+                    { backgroundColor: dynamicStyles.progressBg },
+                  ]}
+                  {...panResponder.panHandlers}
+                >
+                  <Animated.View
+                    style={[
+                      styles.progressFill,
+                      {
+                        backgroundColor: dynamicStyles.progressFill,
+                        width: progressAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: ["0%", "100%"],
+                        }),
+                      },
+                    ]}
+                  />
+                </View>
+                <View style={styles.timeContainer}>
+                  <Text style={[styles.timeText, dynamicStyles.textColor]}>
+                    {formatTime(position)}
+                  </Text>
+                  <Text style={[styles.timeText, dynamicStyles.textColor]}>
+                    {formatTime(duration)}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
+          )}
 
           <View style={styles.navButtonsContainer}>
             <TouchableOpacity
+              onPress={goToPreviousVerse}
+              disabled={currentIndex === 0}
               style={[
                 styles.navButton,
                 dynamicStyles.borderColor,
-                { backgroundColor: dynamicStyles.verseContainerBg },
+                { 
+                  backgroundColor: dynamicStyles.verseContainerBg,
+                  opacity: currentIndex === 0 ? 0.5 : 1
+                },
               ]}
             >
               <Ionicons
@@ -395,10 +429,15 @@ export default function ReadingScreen() {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
+              onPress={goToNextVerse}
+              disabled={currentIndex === allVerses.length - 1}
               style={[
                 styles.navButton,
                 dynamicStyles.borderColor,
-                { backgroundColor: dynamicStyles.verseContainerBg },
+                { 
+                  backgroundColor: dynamicStyles.verseContainerBg,
+                  opacity: currentIndex === allVerses.length - 1 ? 0.5 : 1
+                },
               ]}
             >
               <Text style={[styles.navButtonText, dynamicStyles.textColor]}>
@@ -440,6 +479,8 @@ export default function ReadingScreen() {
     </>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   container: {

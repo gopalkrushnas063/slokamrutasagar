@@ -28,7 +28,8 @@
     "greeting": "Hare Krishna 🙏",
     "title": "Spiritual Journey",
     "categories": "Categories",
-    "allBooks": "All Books"
+    "allBooks": "All Books",
+    "books": "books"
   },
   "bookmark": {
     "title": "Bookmarks 📚",
@@ -54,5 +55,62 @@
     "hindi": "Hindi",
     "odia": "Odia",
     "bengali": "Bengali"
+  },
+  "categories": {
+    "all": "All",
+    "shlokas": "Shlokas",
+    "vedas": "Vedas",
+    "bhagbat": "Bhagbat",
+    "stories": "Stories",
+    "mantras": "Mantras"
+  },
+  "carousel": {
+    "item1": {
+      "title1": "Bhagavad Gita quotes by Shree Krishna",
+      "title2": "",
+      "content": "Feelings of heat and cold, pleasure and pain, are caused by the contact of the senses with their objects. They come and they go, never lasting long. You must accept them."
+    },
+    "item2": {
+      "title1": "On the True Self",
+      "content": "Lorem ipsum dolor sit amet consectetur. Mollis enim vulputate turpis proin fames dolor. Vivamus maecenas ullamcorper scelerisque arcu egestas nisi vitae velit. Mauris ipsum libero etiam urna non consequat vel."
+    }
+  },
+  "books": {
+    "book1": {
+      "title": "Bhagavad Gita Chapter 1",
+      "author": "Krishna"
+    },
+    "book2": {
+      "title": "Rig Veda Mantras",
+      "author": "Ancient Sages"
+    },
+    "book3": {
+      "title": "Krishna Leela",
+      "author": "Vyasa"
+    },
+    "book4": {
+      "title": "Srimad Bhagbatam",
+      "author": "Vyasa"
+    },
+    "book5": {
+      "title": "Gayatri Mantra",
+      "author": "Vishwamitra"
+    },
+    "book6": {
+      "title": "Hanuman Chalisa",
+      "author": "Tulsidas"
+    },
+    "book7": {
+      "title": "Ramayana Stories",
+      "author": "Valmiki"
+    },
+    "book8": {
+      "title": "Sama Veda",
+      "author": "Ancient Sages"
+    },
+    "book9": {
+      "title": "Vishnu Sahasranamam",
+      "author": "Vyasa"
+    }
   }
 }

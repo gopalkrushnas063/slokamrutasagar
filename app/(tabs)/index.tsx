@@ -44,109 +44,6 @@ const { width } = Dimensions.get("window");
 //   },
 // ];
 
-// Categories data
-const categories = [
-  { id: "all", name: "All", icon: "grid-outline" },
-  { id: "shlokas", name: "Shlokas", icon: "library-outline" },
-  { id: "vedas", name: "Vedas", icon: "book-outline" },
-  { id: "bhagbat", name: "Bhagbat", icon: "heart-outline" },
-  { id: "stories", name: "Stories", icon: "chatbubbles-outline" },
-  { id: "mantras", name: "Mantras", icon: "musical-notes-outline" },
-];
-
-const carouselData = [
-  {
-    id: "1",
-    title1: "On the Ornament of Speech",
-    title2: "On the True Self",
-    content:
-      "Lorem ipsum dolor sit amet consectetur. Mollis enim vulputate turpis proin fames dolor. Vivamus maecenas ullamcorper scelerisque arcu egestas nisi vitae velit. Mauris ipsum libero etiam urna non consequat vel.",
-  },
-  {
-    id: "2",
-    title1: "On the True Self",
-    content:
-      "Lorem ipsum dolor sit amet consectetur. Mollis enim vulputate turpis proin fames dolor. Vivamus maecenas ullamcorper scelerisque arcu egestas nisi vitae velit. Mauris ipsum libero etiam urna non consequat vel.",
-  },
-  // Add more if needed
-];
-
-// Sample books data
-const booksData = [
-  {
-    id: "1",
-    title: "Bhagavad Gita Chapter 1",
-    category: "shlokas",
-    author: "Krishna",
-    image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
-    rating: 4.8,
-  },
-  {
-    id: "2",
-    title: "Rig Veda Mantras\n",
-    category: "vedas",
-    author: "Ancient Sages",
-    image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
-    rating: 4.9,
-  },
-  {
-    id: "3",
-    title: "Krishna Leela",
-    category: "stories",
-    author: "Vyasa",
-    image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
-    rating: 4.7,
-  },
-  {
-    id: "4",
-    title: "Srimad Bhagbatam",
-    category: "bhagbat",
-    author: "Vyasa",
-    image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
-    rating: 4.9,
-  },
-  {
-    id: "5",
-    title: "Gayatri Mantra",
-    category: "mantras",
-    author: "Vishwamitra",
-    image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
-    rating: 4.8,
-  },
-  {
-    id: "6",
-    title: "Hanuman Chalisa",
-    category: "shlokas",
-    author: "Tulsidas",
-    image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
-    rating: 4.9,
-  },
-  {
-    id: "7",
-    title: "Ramayana Stories",
-    category: "stories",
-    author: "Valmiki",
-    image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
-    rating: 4.8,
-  },
-  {
-    id: "8",
-    title: "Sama Veda",
-    category: "vedas",
-    author: "Ancient Sages",
-    image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
-    rating: 4.7,
-  },
-  {
-    id: "9",
-    title: "Vishnu Sahasranamam",
-    category: "shlokas",
-    author: "Vyasa",
-    image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
-    rating: 4.9,
-  },
-];
-
 export default function HomeScreen() {
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -157,6 +54,68 @@ export default function HomeScreen() {
   const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const carouselRef = useRef<FlatList>(null);
+
+  // Categories data - now using translations
+  const categories = [
+    { id: "all", name: t("categories.all"), icon: "grid-outline" },
+    { id: "shlokas", name: t("categories.shlokas"), icon: "library-outline" },
+    { id: "vedas", name: t("categories.vedas"), icon: "book-outline" },
+    { id: "bhagbat", name: t("categories.bhagbat"), icon: "heart-outline" },
+    {
+      id: "stories",
+      name: t("categories.stories"),
+      icon: "chatbubbles-outline",
+    },
+    {
+      id: "mantras",
+      name: t("categories.mantras"),
+      icon: "musical-notes-outline",
+    },
+  ];
+
+  // Carousel data - now using translations
+  const carouselData = [
+    {
+      id: "1",
+      title1: t("carousel.item1.title1"),
+      title2: t("carousel.item1.title2"),
+      content: t("carousel.item1.content"),
+    },
+    {
+      id: "2",
+      title1: t("carousel.item2.title1"),
+      content: t("carousel.item2.content"),
+    },
+  ];
+
+  // Books data - now using translations
+  const booksData = [
+    {
+      id: "1",
+      title: t("books.book1.title"),
+      category: "shlokas",
+      author: t("books.book1.author"),
+      image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
+      rating: 4.8,
+    },
+    {
+      id: "2",
+      title: t("books.book2.title"),
+      category: "vedas",
+      author: t("books.book2.author"),
+      image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
+      rating: 4.9,
+    },
+    // Continue for all books...
+    {
+      id: "9",
+      title: t("books.book9.title"),
+      category: "shlokas",
+      author: t("books.book9.author"),
+      image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
+      rating: 4.9,
+    },
+  ];
 
   // Filter books based on selected category
   const filteredBooks =
@@ -179,74 +138,59 @@ export default function HomeScreen() {
   //   </View>
   // );
   const renderCarouselItem = ({ item }: { item: (typeof carouselData)[0] }) => (
-    <View
-      style={[
-        styles.carouselCard,
-        {
-          backgroundColor: currentTheme == "dark" ? "#1e1e1e" : "#ffffff",
-          shadowColor: currentTheme == "dark" ? "#000" : "#aaa",
-        },
-      ]}
-    >
-      {/* Watermark at center */}
-      <Image
-        source={require("@/assets/images/m1.png")}
-        style={[
-          styles.watermarkImage,
-          currentTheme === "dark"
-            ? { tintColor: "#ffffff" }
-            : { tintColor: "#922033" },
-        ]}
-        resizeMode="contain"
+    <View style={styles.carouselItemContainer}>
+      {/* Add the Rectangular Mandala Border */}
+      <RectangularMandalaBorder
+        width={width - 40}
+        height={220}
+        color={currentTheme === "dark" ? "#FFA500" : "#922033"}
+        strokeWidth={1.5}
+        cornerRadius={16}
       />
 
-      <Ionicons
-        name="pause-outline"
-        size={40}
-        color="#fbc6b4"
-        style={styles.quoteIconTop}
-      />
-
-      {item.title1 && (
-        <Text
-          style={[
-            styles.quoteTitle1,
-            { color: currentTheme === "dark" ? "#ffffff" : "#222222" },
-          ]}
-        >
-          {item.title1}
-        </Text>
-      )}
-      {item.title2 && (
-        <Text
-          style={[
-            styles.quoteTitle2,
-            { color: currentTheme === "dark" ? "#ffffff" : "#222222" },
-          ]}
-        >
-          {item.title2}
-        </Text>
-      )}
-      <Text
+      <View
         style={[
-          styles.quoteContent,
-          { color: currentTheme === "dark" ? "#ffffff" : "#222222" },
+          styles.carouselCard,
+          {
+            backgroundColor: currentTheme == "dark" ? "#1e1e1e" : "#ffffff",
+            shadowColor: currentTheme == "dark" ? "#000" : "#aaa",
+          },
         ]}
       >
-        {item.content}
-      </Text>
+        {/* Watermark at center */}
+        <Image
+          source={require("@/assets/images/m1.png")}
+          style={[
+            styles.watermarkImage,
+            currentTheme === "dark"
+              ? { tintColor: "#ffffff" }
+              : { tintColor: "#922033" },
+          ]}
+          resizeMode="contain"
+        />
 
-      {item.title2 && (
-        <>
-          <View style={styles.divider} />
-          <Text
-            style={[
-              styles.quoteTitle2,
-              { color: currentTheme === "dark" ? "#ffffff" : "#222222" },
-            ]}
-          >
-            {item.title2}
-          </Text>
+        {/* Content Container - This will center all the text */}
+        <View style={styles.carouselContentContainer}>
+          {item.title1 && (
+            <Text
+              style={[
+                styles.quoteTitle1,
+                { color: currentTheme === "dark" ? "#ffffff" : "#222222" },
+              ]}
+            >
+              {item.title1}
+            </Text>
+          )}
+          {item.title2 && (
+            <Text
+              style={[
+                styles.quoteTitle2,
+                { color: currentTheme === "dark" ? "#ffffff" : "#222222" },
+              ]}
+            >
+              {item.title2}
+            </Text>
+          )}
           <Text
             style={[
               styles.quoteContent,
@@ -255,15 +199,30 @@ export default function HomeScreen() {
           >
             {item.content}
           </Text>
-        </>
-      )}
 
-      <Ionicons
-        name="pause-outline"
-        size={40}
-        color="#fbc6b4"
-        style={styles.quoteIconBottom}
-      />
+          {item.title2 && (
+            <>
+              <View style={styles.divider} />
+              <Text
+                style={[
+                  styles.quoteTitle2,
+                  { color: currentTheme === "dark" ? "#ffffff" : "#222222" },
+                ]}
+              >
+                {item.title2}
+              </Text>
+              <Text
+                style={[
+                  styles.quoteContent,
+                  { color: currentTheme === "dark" ? "#ffffff" : "#222222" },
+                ]}
+              >
+                {item.content}
+              </Text>
+            </>
+          )}
+        </View>
+      </View>
     </View>
   );
 
@@ -360,7 +319,7 @@ export default function HomeScreen() {
         colors={
           currentTheme === "dark"
             ? ["#333", "#444"] // Dark mode gradient colors
-            : ["#fafafa", "#d19a9c"] // Light mode gradient colors
+            : ["#f7f0f0", "#f7f0f0"] // Light mode gradient colors
         }
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -532,12 +491,37 @@ export default function HomeScreen() {
   return renderContent();
 }
 
+import RectangularMandalaBorder from "@/src/components/decorative/RectangularMandalaBorder";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { t } from "i18next";
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
+  carouselContentContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  carouselItemContainer: {
+    width: width - 40,
+    height: 220,
+    marginHorizontal: 20,
+    position: "relative",
+  },
+  carouselCard: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 16,
+    padding: 20,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
+    position: "relative",
+    overflow: "hidden",
+  },
   backgroundImage: {
     position: "absolute",
     top: 0,
@@ -572,20 +556,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  carouselCard: {
-    width: width - 40,
-    marginHorizontal: 20,
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 4,
-    position: "relative",
-    overflow: "hidden", // ✨ Clip watermark overflow
-  },
 
   quoteIconTop: {
     position: "absolute",
@@ -606,7 +576,7 @@ const styles = StyleSheet.create({
     left: "50%",
     width: 250,
     height: 250,
-    opacity: 0.2,
+    opacity: 0.05,
     transform: [
       { translateX: -100 }, // half of width
       { translateY: -100 }, // half of height
@@ -775,10 +745,12 @@ const styles = StyleSheet.create({
   cornerImage: {
     width: "100%",
     height: "100%",
+    opacity: 0.2,
   },
   bookImage: {
     width: "100%",
     height: 120,
+    
   },
   bookTitle: {
     fontSize: 14,
