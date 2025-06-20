@@ -7,7 +7,7 @@ export const darkTheme = {
   container: {
     flex: 1,
     backgroundColor: '#121212',
-    padding: 20,
+    // padding: 20,
   },
   text: {
     color: '#ffffff',
@@ -28,7 +28,7 @@ export const darkTheme = {
 export const gradientTheme = {
   container: {
     flex: 1,
-    padding: 20,
+    // padding: 20,
   },
   text: {
     color: '#000000',

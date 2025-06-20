@@ -41,16 +41,16 @@ const onboardingData: OnboardingItem[] = [
   },
   {
     id: "3",
-    title: "Gradient Theme",
-    description: "Try our beautiful gradient theme for a vibrant look",
+    title: "Hindu Divine Spirituality — Illuminating Human Life",
+    description: "Embark on a spiritual journey rooted in the wisdom of Hinduism. Discover how divine teachings, sacred shlokas, and timeless traditions bring clarity, peace, and purpose to everyday life. Let ancient light guide your modern path.",
     emoji: require("@/assets/images/ob_2.png"),
   },
-  {
-    id: "4",
-    title: "Get Started",
-    description: "You're all set! Start exploring the app",
-    emoji: require("@/assets/images/ob_3.png"),
-  },
+  // {
+  //   id: "4",
+  //   title: "Get Started",
+  //   description: "You're all set! Start exploring the app",
+  //   emoji: require("@/assets/images/ob_3.png"),
+  // },
 ];
 
 export const OnboardingScreen: React.FC = () => {
