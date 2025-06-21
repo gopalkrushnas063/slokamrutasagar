@@ -19,7 +19,8 @@ import { useSelector } from "react-redux";
 import { useTheme } from "../../src/context/ThemeContext";
 import { RootState } from "../../src/store";
 import { GradientBackground } from "../../src/styles/themes";
-import { bhagavadGitaData, getAllVerses } from "../../src/data/bhagavadGitaData";
+import { getAllVerses } from "@/src/data/books";
+import { getLocalizedBookData } from "@/src/utils/bookDataHelper";
 
 export default function ReadingScreen() {
   const navigation = useNavigation();
@@ -40,10 +41,11 @@ export default function ReadingScreen() {
   const progressBarWidth = useRef(0);
   const progressBarRef = useRef<View>(null);
 
-  // Get current verse data
-  const currentChapter = bhagavadGitaData.chapters.find(ch => ch.chapter === chapter);
+  // Get book data and current verse
+  const book = getLocalizedBookData(id as string);
+  const currentChapter = book.chapters.find(ch => ch.chapter === chapter);
   const currentVerse = currentChapter?.verses.find(v => v.verse === verse);
-  const allVerses = getAllVerses();
+  const allVerses = getAllVerses(book);
   const currentIndex = allVerses.findIndex(v => v.chapter === chapter && v.verse === verse);
 
   // Handle back navigation and cleanup
@@ -288,8 +290,10 @@ export default function ReadingScreen() {
       navigateToVerse(nextVerse.chapter, nextVerse.verse);
     }
   };
+  
 
   const renderContent = () => (
+    
     <View style={[styles.container, dynamicStyles.backgroundStyle]}>
       <SafeAreaView
         edges={["top"]}
@@ -310,7 +314,7 @@ export default function ReadingScreen() {
             />
           </TouchableOpacity>
           <Text style={[styles.headerTitle, dynamicStyles.headerTitle]}>
-            Bhagavad Gita {chapter}.{verse}
+            {book.title} {chapter}.{verse}
           </Text>
         </View>
       </SafeAreaView>
@@ -479,8 +483,6 @@ export default function ReadingScreen() {
     </>
   );
 }
-
-
 
 const styles = StyleSheet.create({
   container: {

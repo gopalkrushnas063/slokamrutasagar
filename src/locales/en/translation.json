@@ -112,5 +112,73 @@
       "title": "Vishnu Sahasranamam",
       "author": "Vyasa"
     }
+  },
+  "bhagavadGitaData": {
+    "title": "Bhagavad Gita",
+    "author": "Shri Krishna",
+    "language": "Sanskrit",
+    "chapters": [
+      {
+        "chapter": 1,
+        "title": "Arjuna's Despondency",
+        "verses": [
+          {
+            "verse": 1,
+            "transliteration": "Dhritarashtra Uvacha",
+            "translation": "Dhritarashtra said: O Sanjaya, assembled in the sacred land of Kurukshetra and desiring to fight, what did my sons and the sons of Pandu do?",
+            "commentary": "The Bhagavad Gita begins with King Dhritarashtra inquiring about the battle that was to take place between his sons (Kauravas) and the sons of Pandu (Pandavas) in the holy field of Kurukshetra."
+          },
+          {
+            "verse": 2,
+            "transliteration": "Sanjaya Uvacha",
+            "translation": "Sanjaya said: Seeing the Pandava army arranged in military formation, King Duryodhana approached his teacher Drona and spoke these words:",
+            "commentary": "The eldest Kaurava, Duryodhana, sees the well-arranged Pandava army and immediately consults his teacher Dronacharya."
+          }
+        ]
+      },
+      {
+        "chapter": 2,
+        "title": "Sankhya Yoga",
+        "verses": [
+          {
+            "verse": 1,
+            "transliteration": "Sanjaya Uvacha",
+            "translation": "Sanjaya said: Seeing Arjuna overwhelmed with compassion and despair, his eyes filled with tears, Madhusudana (Krishna) spoke the following words.",
+            "commentary": "This verse marks the beginning of Lord Krishna’s teachings."
+          },
+          {
+            "verse": 2,
+            "transliteration": "Shri Bhagavan Uvacha",
+            "translation": "The Lord said: O Arjuna, how has this delusion come upon you at this hour of crisis?",
+            "commentary": "Lord Krishna rebukes Arjuna for his weakness."
+          }
+        ]
+      }
+    ]
+  },
+  "rigVedaMantrasData": {
+    "title": "Rigveda Mantras",
+    "author": "Ancient Rishis",
+    "language": "Sanskrit",
+    "chapters": [
+      {
+        "chapter": 1,
+        "title": "First Mandala",
+        "verses": [
+          {
+            "verse": 1,
+            "transliteration": "Agnimīḷe Purohitam",
+            "translation": "I praise Agni, the priest of the sacrifice.",
+            "commentary": "The first sukta of Rigveda, dedicated to the deity Agni."
+          },
+          {
+            "verse": 2,
+            "transliteration": "Agniḥ pūrvebhir ṛṣibhir īḍhyo",
+            "translation": "Agni, praised by both ancient and modern sages.",
+            "commentary": "Agni is timeless and revered by all generations of sages."
+          }
+        ]
+      }
+    ]
   }
 }

@@ -106,15 +106,7 @@ export default function HomeScreen() {
       image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
       rating: 4.9,
     },
-    // Continue for all books...
-    {
-      id: "9",
-      title: t("books.book9.title"),
-      category: "shlokas",
-      author: t("books.book9.author"),
-      image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
-      rating: 4.9,
-    },
+    
   ];
 
   // Filter books based on selected category
