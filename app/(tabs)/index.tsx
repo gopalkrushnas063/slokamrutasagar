@@ -93,20 +93,48 @@ export default function HomeScreen() {
     {
       id: "1",
       title: t("books.book1.title"),
-      category: "shlokas",
+      category: "bhagbat",
       author: t("books.book1.author"),
       image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
       rating: 4.8,
+      comingSoon: false, // Available now
     },
     {
       id: "2",
       title: t("books.book2.title"),
       category: "vedas",
-      author: t("books.book2.author"),
-      image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
-      rating: 4.9,
+      author: "",
+      image: require("@/assets/images/categories/vedas.jpg"),
+      rating: 0,
+      comingSoon: true, // Coming soon
     },
-    
+    {
+      id: "3",
+      title: t("books.book3.title"),
+      category: "stories",
+      author: "",
+      image: require("@/assets/images/categories/krishna_leela.png"),
+      rating: 0,
+      comingSoon: true, // Coming soon
+    },
+    {
+      id: "4",
+      title: t("books.book4.title"),
+      category: "shlokas",
+      author: "",
+      image: require("@/assets/images/categories/vishnu.avif"),
+      rating: 0,
+      comingSoon: true, // Coming soon
+    },
+    {
+      id: "5",
+      title: t("books.book5.title"),
+      category: "mantras",
+      author: "",
+      image: require("@/assets/images/categories/laxmi.jpg"),
+      rating: 0,
+      comingSoon: true, // Coming soon
+    },
   ];
 
   // Filter books based on selected category
@@ -129,72 +157,79 @@ export default function HomeScreen() {
   //     </View>
   //   </View>
   // );
-  const renderCarouselItem = ({ item }: { item: (typeof carouselData)[0] }) => (
-    <View style={styles.carouselItemContainer}>
-      {/* Add the Rectangular Mandala Border */}
-      <RectangularMandalaBorder
-        width={width - 40}
-        height={220}
-        color={currentTheme === "dark" ? "#FFA500" : "#922033"}
-        strokeWidth={1.5}
-        cornerRadius={16}
-      />
+  const renderCarouselItem = ({ item }: { item: (typeof carouselData)[0] }) => {
+    // Calculate the required height based on content
+    const calculateContentHeight = () => {
+      let height = 180; // Base height
 
-      <View
-        style={[
-          styles.carouselCard,
-          {
-            backgroundColor: currentTheme == "dark" ? "#1e1e1e" : "#ffffff",
-            shadowColor: currentTheme == "dark" ? "#000" : "#aaa",
-          },
-        ]}
-      >
-        {/* Watermark at center */}
-        <Image
-          source={require("@/assets/images/m1.png")}
-          style={[
-            styles.watermarkImage,
-            currentTheme === "dark"
-              ? { tintColor: "#ffffff" }
-              : { tintColor: "#922033" },
-          ]}
-          resizeMode="contain"
+      // Add space for title1 if present
+      if (item.title1) height += 30;
+
+      // Add space for title2 if present
+      if (item.title2) height += 30;
+
+      // Add space for content (estimate 20px per line)
+      const contentLines = Math.ceil(item.content.length / 30); // Approximate lines
+      height += contentLines * 20;
+
+      // Add padding and margin
+      height += 40;
+
+      // Ensure minimum height
+      return Math.max(height, 220);
+    };
+
+    const itemHeight = calculateContentHeight();
+
+    return (
+      <View style={[styles.carouselItemContainer, { height: itemHeight }]}>
+        {/* Add the Rectangular Mandala Border */}
+        <RectangularMandalaBorder
+          width={width - 40}
+          height={itemHeight}
+          color={currentTheme === "dark" ? "#FFA500" : "#922033"}
+          strokeWidth={1.5}
+          cornerRadius={16}
         />
 
-        {/* Content Container - This will center all the text */}
-        <View style={styles.carouselContentContainer}>
-          {item.title1 && (
-            <Text
-              style={[
-                styles.quoteTitle1,
-                { color: currentTheme === "dark" ? "#ffffff" : "#222222" },
-              ]}
-            >
-              {item.title1}
-            </Text>
-          )}
-          {item.title2 && (
-            <Text
-              style={[
-                styles.quoteTitle2,
-                { color: currentTheme === "dark" ? "#ffffff" : "#222222" },
-              ]}
-            >
-              {item.title2}
-            </Text>
-          )}
-          <Text
+        <View
+          style={[
+            styles.carouselCard,
+            {
+              height: itemHeight - 4, // Slightly smaller than container to show border
+              backgroundColor: currentTheme == "dark" ? "#1e1e1e" : "#ffffff",
+              shadowColor: currentTheme == "dark" ? "#000" : "#aaa",
+            },
+          ]}
+        >
+          {/* Watermark at center */}
+          <Image
+            source={require("@/assets/images/m1.png")}
             style={[
-              styles.quoteContent,
-              { color: currentTheme === "dark" ? "#ffffff" : "#222222" },
+              styles.watermarkImage,
+              currentTheme === "dark"
+                ? { tintColor: "#ffffff" }
+                : { tintColor: "#922033" },
             ]}
-          >
-            {item.content}
-          </Text>
+            resizeMode="contain"
+          />
 
-          {item.title2 && (
-            <>
-              <View style={styles.divider} />
+          {/* ScrollView for content that might be too long */}
+          <ScrollView
+            contentContainerStyle={styles.carouselContentContainer}
+            showsVerticalScrollIndicator={false}
+          >
+            {item.title1 && (
+              <Text
+                style={[
+                  styles.quoteTitle1,
+                  { color: currentTheme === "dark" ? "#ffffff" : "#222222" },
+                ]}
+              >
+                {item.title1}
+              </Text>
+            )}
+            {item.title2 && (
               <Text
                 style={[
                   styles.quoteTitle2,
@@ -203,20 +238,42 @@ export default function HomeScreen() {
               >
                 {item.title2}
               </Text>
-              <Text
-                style={[
-                  styles.quoteContent,
-                  { color: currentTheme === "dark" ? "#ffffff" : "#222222" },
-                ]}
-              >
-                {item.content}
-              </Text>
-            </>
-          )}
+            )}
+            <Text
+              style={[
+                styles.quoteContent,
+                { color: currentTheme === "dark" ? "#ffffff" : "#222222" },
+              ]}
+            >
+              {item.content}
+            </Text>
+
+            {item.title2 && (
+              <>
+                <View style={styles.divider} />
+                <Text
+                  style={[
+                    styles.quoteTitle2,
+                    { color: currentTheme === "dark" ? "#ffffff" : "#222222" },
+                  ]}
+                >
+                  {item.title2}
+                </Text>
+                <Text
+                  style={[
+                    styles.quoteContent,
+                    { color: currentTheme === "dark" ? "#ffffff" : "#222222" },
+                  ]}
+                >
+                  {item.content}
+                </Text>
+              </>
+            )}
+          </ScrollView>
         </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   // Carousel pagination dots
   const renderCarouselDots = () => (
@@ -284,93 +341,190 @@ export default function HomeScreen() {
   );
 
   // Book item renderer
-  const renderBookItem = ({ item }: { item: (typeof booksData)[0] }) => (
-    <TouchableOpacity
-      onPress={() =>
-        router.push({
-          pathname: "/pages/bookdetails",
-          params: { id: item.id },
-        })
-      }
-      style={[
-        styles.bookItem,
-        {
-          backgroundColor:
-            currentTheme === "dark" ? "#2a2a2a" : "rgba(255, 255, 255, 0.9)",
-          shadowColor: currentTheme === "dark" ? "#000" : "#000",
-        },
-      ]}
-    >
-      <Image
-        source={item.image} // This is now a local require
-        style={styles.bookImage}
-        resizeMode="cover"
-      />
+  const renderBookItem = ({ item }: { item: (typeof booksData)[0] }) => {
+    const isComingSoon = item.comingSoon;
+    const isDarkMode = currentTheme === "dark";
 
-      <LinearGradient
-        colors={
-          currentTheme === "dark"
-            ? ["#333", "#444"] // Dark mode gradient colors
-            : ["#f7f0f0", "#f7f0f0"] // Light mode gradient colors
-        }
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.bookInfo}
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          if (isComingSoon) return;
+          router.push({
+            pathname: "/pages/bookdetails",
+            params: { id: item.id },
+          });
+        }}
+        style={[
+          styles.bookItem,
+          {
+            backgroundColor: isDarkMode
+              ? "#2a2a2a"
+              : "rgba(255, 255, 255, 0.9)",
+            shadowColor: isDarkMode ? "#000" : "#000",
+          },
+        ]}
+        activeOpacity={isComingSoon ? 1 : 0.7}
       >
-        {/* Corner Image - Right Edge Aligned */}
-        <View style={styles.cornerImageWrapper}>
+        {/* Book Image Container with Coming Soon Overlay */}
+        <View style={styles.imageContainer}>
           <Image
-            source={require("@/assets/images/yoga-half-mandala.png")}
-            style={[
-              styles.cornerImage,
-              currentTheme === "dark"
-                ? { tintColor: "#ffffff" }
-                : { tintColor: "#922033" },
-            ]}
-            resizeMode="contain"
+            source={item.image}
+            style={[styles.bookImage, isComingSoon && { opacity: 0.6 }]}
+            resizeMode="cover"
           />
+
+          {/* Centered Coming Soon Watermark */}
+          {isComingSoon && (
+            <View style={styles.comingSoonContainer}>
+              <View
+                style={[
+                  styles.comingSoonBadge,
+                  {
+                    backgroundColor: isDarkMode
+                      ? "rgba(50, 50, 50, 0.85)"
+                      : "rgba(255, 255, 255, 0.85)",
+                    borderColor: isDarkMode ? "#FFA500" : "#922033",
+                  },
+                ]}
+              >
+                <Ionicons
+                  name="time-outline"
+                  size={16}
+                  color={isDarkMode ? "#FFA500" : "#922033"}
+                  style={styles.comingSoonIcon}
+                />
+                <Text
+                  style={[
+                    styles.comingSoonText,
+                    {
+                      color: isDarkMode ? "#FFA500" : "#922033",
+                    },
+                  ]}
+                >
+                  Coming Soon
+                </Text>
+              </View>
+            </View>
+          )}
         </View>
 
-        <Text
-          style={[
-            styles.bookTitle,
-            { color: currentTheme === "dark" ? "#eee" : "#333" },
-          ]}
-          numberOfLines={2}
+        {/* Book Info */}
+        <LinearGradient
+          colors={
+            isComingSoon
+              ? isDarkMode
+                ? ["#333", "#444"]
+                : ["#e0e0e0", "#f0f0f0"]
+              : isDarkMode
+              ? ["#333", "#444"]
+              : ["#f7f0f0", "#f7f0f0"]
+          }
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.bookInfo}
         >
-          {item.title}
-        </Text>
-        <Text
-          style={[
-            styles.bookAuthor,
-            { color: currentTheme === "dark" ? "#ccc" : "#555" },
-          ]}
-          numberOfLines={1}
-        >
-          {item.author}
-        </Text>
-
-        <View style={styles.bookmarkContainer}>
-          <View style={styles.ratingContainer}>
-            <Ionicons name="star" size={14} color="#FFA500" />
-            <Text
+          {/* Corner Decoration Image */}
+          <View style={styles.cornerImageWrapper}>
+            <Image
+              source={require("@/assets/images/yoga-half-mandala.png")}
               style={[
-                styles.rating,
-                { color: currentTheme === "dark" ? "#eee" : "#333" },
+                styles.cornerImage,
+                {
+                  tintColor: isComingSoon
+                    ? isDarkMode
+                      ? "#777"
+                      : "#999"
+                    : isDarkMode
+                    ? "#ffffff"
+                    : "#922033",
+                  opacity: isComingSoon ? 0.5 : 0.3,
+                },
               ]}
-            >
-              {item.rating}
-            </Text>
+              resizeMode="contain"
+            />
           </View>
-          <Ionicons
-            name="bookmarks"
-            size={15}
-            color={currentTheme === "dark" ? "#FFA500" : "#922033"}
-          />
-        </View>
-      </LinearGradient>
-    </TouchableOpacity>
-  );
+
+          {/* Book Title */}
+          <Text
+            style={[
+              styles.bookTitle,
+              {
+                color: isComingSoon
+                  ? isDarkMode
+                    ? "#888"
+                    : "#999"
+                  : isDarkMode
+                  ? "#eee"
+                  : "#333",
+              },
+            ]}
+            numberOfLines={2}
+          >
+            {item.title}
+          </Text>
+
+          {/* Book Author */}
+          <Text
+            style={[
+              styles.bookAuthor,
+              {
+                color: isComingSoon
+                  ? isDarkMode
+                    ? "#777"
+                    : "#888"
+                  : isDarkMode
+                  ? "#ccc"
+                  : "#555",
+              },
+            ]}
+            numberOfLines={1}
+          >
+            {item.author}
+          </Text>
+
+          {/* Rating and Bookmark */}
+          <View style={styles.bookmarkContainer}>
+            <View style={styles.ratingContainer}>
+              <Ionicons
+                name="star"
+                size={14}
+                color={isComingSoon ? "#888" : "#FFA500"}
+              />
+              <Text
+                style={[
+                  styles.rating,
+                  {
+                    color: isComingSoon
+                      ? isDarkMode
+                        ? "#777"
+                        : "#888"
+                      : isDarkMode
+                      ? "#eee"
+                      : "#333",
+                  },
+                ]}
+              >
+                {item.rating}
+              </Text>
+            </View>
+            <Ionicons
+              name="bookmarks"
+              size={15}
+              color={
+                isComingSoon
+                  ? isDarkMode
+                    ? "#777"
+                    : "#999"
+                  : isDarkMode
+                  ? "#FFA500"
+                  : "#922033"
+              }
+            />
+          </View>
+        </LinearGradient>
+      </TouchableOpacity>
+    );
+  };
 
   // Handle carousel scroll
   const onCarouselViewableItemsChanged = useRef(
@@ -490,21 +644,130 @@ import { t } from "i18next";
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
-  carouselContentContainer: {
+  // Book Item Container
+  bookItem: {
     flex: 1,
+    maxWidth: "48%",
+    height: 220,
+    borderRadius: 12,
+    marginBottom: 20,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+    overflow: "hidden",
+  },
+
+  // Image Container
+  imageContainer: {
+    position: "relative",
+    width: "100%",
+    height: 120,
+  },
+
+  bookImage: {
+    width: "100%",
+    height: "100%",
+  },
+
+  // Coming Soon Styles
+  comingSoonContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20,
+  },
+
+  comingSoonBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+
+  comingSoonIcon: {
+    marginRight: 6,
+  },
+
+  comingSoonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    letterSpacing: 0.5,
+  },
+
+  // Book Info Styles
+  bookInfo: {
+    flex: 1,
+    padding: 12,
+    justifyContent: "space-between",
+    position: "relative",
+  },
+
+  cornerImageWrapper: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    width: 90,
+    height: 70,
+    marginRight: -30,
+  },
+
+  cornerImage: {
+    width: "100%",
+    height: "100%",
+  },
+
+  bookTitle: {
+    fontSize: 14,
+    fontWeight: "bold",
+    marginBottom: 4,
+    lineHeight: 18,
+  },
+
+  bookAuthor: {
+    fontSize: 12,
+    marginBottom: 8,
+  },
+
+  bookmarkContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  ratingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  rating: {
+    fontSize: 12,
+    marginLeft: 4,
+    fontWeight: "500",
+  },
+  comingSoonOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
   },
   carouselItemContainer: {
     width: width - 40,
-    height: 220,
     marginHorizontal: 20,
     position: "relative",
   },
   carouselCard: {
     width: "100%",
-    height: "100%",
     borderRadius: 16,
     padding: 20,
     shadowOffset: { width: 0, height: 2 },
@@ -514,6 +777,13 @@ const styles = StyleSheet.create({
     position: "relative",
     overflow: "hidden",
   },
+  carouselContentContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+
   backgroundImage: {
     position: "absolute",
     top: 0,
@@ -705,70 +975,5 @@ const styles = StyleSheet.create({
   },
   bookRow: {
     justifyContent: "space-between",
-  },
-  bookItem: {
-    flex: 1,
-    maxWidth: "48%",
-    height: 220,
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    marginBottom: 20,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
-    overflow: "hidden", // Important for containing absolute positioned elements
-  },
-  bookInfo: {
-    flex: 1,
-    padding: 12,
-    justifyContent: "space-between",
-    position: "relative", // Needed for absolute positioning of children
-  },
-  cornerImageWrapper: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    width: 90, // Adjust as needed
-    height: 70, // Adjust as needed
-    marginRight: -30, // Pulls the image to the edge
-    // marginTop: 5,
-  },
-  cornerImage: {
-    width: "100%",
-    height: "100%",
-    opacity: 0.2,
-  },
-  bookImage: {
-    width: "100%",
-    height: 120,
-    
-  },
-  bookTitle: {
-    fontSize: 14,
-    fontWeight: "bold",
-    marginBottom: 4,
-    lineHeight: 18,
-    color: "#333",
-  },
-  bookAuthor: {
-    fontSize: 12,
-    marginBottom: 8,
-    color: "#555",
-  },
-  ratingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  bookmarkContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  rating: {
-    fontSize: 12,
-    marginLeft: 4,
-    fontWeight: "500",
-    color: "#333",
   },
 });

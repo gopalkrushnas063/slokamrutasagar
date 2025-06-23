@@ -5,7 +5,8 @@ import { rigVedaMantrasData } from '@/src/data/books/rigVedaMantrasData';
 
 type VerseTranslation = {
   verse?: number;
-  transliteration?: string;  // Now in local script
+  sanskrit?: string;  // Added Sanskrit field
+  transliteration?: string;
   translation?: string;
   commentary?: string;
 };
@@ -37,46 +38,31 @@ export const getLocalizedBookData = (bookId: string) => {
     translations = {};
   }
 
-  // Debug: Log the raw translation structure
-  console.log('RAW TRANSLATIONS:', translations);
-
   return {
     ...bookData,
     title: translations?.title || bookData.title,
     author: translations?.author || bookData.author,
     language: translations?.language || bookData.language,
     chapters: bookData.chapters.map(chapter => {
-      // Find translated chapter - more defensive
       const translatedChapter = translations?.chapters?.find(
         tc => tc?.chapter === chapter.chapter
       ) || {};
-
-      // Debug chapter match
-      console.log(`MATCHING CHAPTER ${chapter.chapter}:`, {
-        translatedTitle: translatedChapter?.title,
-        hasVerses: !!translatedChapter?.verses
-      });
 
       return {
         ...chapter,
         title: translatedChapter?.title || chapter.title,
         verses: chapter.verses.map(verse => {
-          // Find translated verse - handle missing arrays
           const translatedVerses = translatedChapter?.verses || [];
           const translatedVerse = translatedVerses.find(
             tv => tv?.verse === verse.verse
           ) || {};
 
-          // Debug verse match
-          console.log(`MATCHING VERSE ${verse.verse}:`, {
-            foundTranslation: !!translatedVerse?.translation,
-            foundTransliteration: !!translatedVerse?.transliteration,
-            foundCommentary: !!translatedVerse?.commentary
-          });
-
           return {
             ...verse, // Keep all original fields
             // Only override if translation exists
+            ...(translatedVerse?.sanskrit && { 
+              sanskrit: translatedVerse.sanskrit 
+            }),
             ...(translatedVerse?.translation && { 
               translation: translatedVerse.translation 
             }),
@@ -93,7 +79,6 @@ export const getLocalizedBookData = (bookId: string) => {
   };
 };
 
-// Helper function to get all books with translations
 export const getAllLocalizedBooks = () => {
   return [
     getLocalizedBookData('1'), // Bhagavad Gita
@@ -101,7 +86,6 @@ export const getAllLocalizedBooks = () => {
   ];
 };
 
-// Helper function to get book by ID with translations
 export const getLocalizedBookById = (id: string) => {
   return getLocalizedBookData(id);
 };

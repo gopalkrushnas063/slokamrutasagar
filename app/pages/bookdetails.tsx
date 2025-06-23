@@ -1,4 +1,6 @@
 import RectangularMandalaBorder from "@/src/components/decorative/RectangularMandalaBorder";
+import { getAllVerses } from "@/src/data/books";
+import { getLocalizedBookData } from "@/src/utils/bookDataHelper";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React from "react";
@@ -19,9 +21,6 @@ import { useSelector } from "react-redux";
 import { useTheme } from "../../src/context/ThemeContext";
 import { RootState } from "../../src/store";
 import { GradientBackground } from "../../src/styles/themes";
-import { getAllVerses } from "@/src/data/books";
-import { getLocalizedBookData } from "@/src/utils/bookDataHelper";
-
 
 const windowWidth = Dimensions.get("window").width;
 
@@ -120,7 +119,7 @@ export default function BookDetailsScreen() {
         <View style={styles.separatorLine} />
       </View>
       <Text style={[styles.verseText, dynamicStyles.textColor]}>
-        {item.sanskrit.split('\n')[0]}...
+        {item.sanskrit.split("\n")[0]}...
       </Text>
     </TouchableOpacity>
   );
@@ -190,17 +189,17 @@ export default function BookDetailsScreen() {
           <Text style={[styles.bookTitle, dynamicStyles.textColor]}>
             {book.title}
           </Text>
-          {book.chapters[0] && (
+          {/* {book.chapters[0] && (
             <Text style={[styles.bookSubtitle, dynamicStyles.textColor]}>
               {book.chapters[0].title} (Chapter 1)
             </Text>
-          )}
+          )} */}
 
           <View style={[styles.divider, dynamicStyles.borderColor]} />
 
-          <Text style={[styles.bookAuthor, dynamicStyles.textColor]}>
+          {/* <Text style={[styles.bookAuthor, dynamicStyles.textColor]}>
             {book.author}
-          </Text>
+          </Text> */}
 
           <View style={styles.detailsContainer}>
             <View style={styles.detailItem}>
@@ -228,7 +227,8 @@ export default function BookDetailsScreen() {
             <View style={styles.detailItem}>
               <Ionicons name="list" size={18} color={dynamicStyles.iconColor} />
               <Text style={[styles.detailText, dynamicStyles.textColor]}>
-                {book.chapters.reduce((acc, ch) => acc + ch.verseCount, 0)} Verses
+                {book.chapters.reduce((acc, ch) => acc + ch.verses.length, 0)}{" "}
+                Verses
               </Text>
             </View>
           </View>
