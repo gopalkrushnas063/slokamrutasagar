@@ -18,6 +18,7 @@ import { useTheme } from "../context/ThemeContext";
 import { setLanguage } from "../store/slices/languageSlice";
 import { completeOnboarding } from "../store/slices/onboardingSlice";
 import { GradientBackground } from "../styles/themes";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
@@ -146,8 +147,8 @@ export const OnboardingScreen: React.FC = () => {
   };
 
   const changeLanguage = (lng: string) => {
-    dispatch(setLanguage(lng)); // Dispatch to Redux
-    i18n.changeLanguage(lng); // Update i18n
+    dispatch(setLanguage(lng));
+    i18n.changeLanguage(lng);
     setShowLanguageDropdown(false);
   };
 
@@ -187,151 +188,165 @@ export const OnboardingScreen: React.FC = () => {
   );
 
   return (
-    <GradientBackground>
-      <View style={styles.container}>
-        <Image
-          source={require("@/assets/images/m4.png")}
-          style={styles.backgroundImage}
-          resizeMode="contain"
-        />
+    <SafeAreaView style={{ flex: 1 }}>
+      <GradientBackground>
+        <View style={styles.container}>
+          {/* Top Bar */}
+          <View style={styles.topBar}>
+            {/* Left Side - Language and Music */}
+            <View style={styles.leftContainer}>
+              <TouchableOpacity
+                ref={languageButtonRef}
+                style={styles.languageButton}
+                onPress={toggleLanguageDropdown}
+              >
+                <Ionicons name="language" size={24} color="#922033" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.musicButton} onPress={togglePlayPause}>
+                <Text style={[styles.musicIcon, { color: theme.text.color }]}>
+                  {isPlaying ? "🎵" : "🎶"}
+                </Text>
+              </TouchableOpacity>
+            </View>
 
-        <TouchableOpacity style={styles.musicButton} onPress={togglePlayPause}>
-          <Text style={[styles.musicIcon, { color: theme.text.color }]}>
-            {isPlaying ? "🎵" : "🎶"}
-          </Text>
-        </TouchableOpacity>
+            {/* Center - Logo */}
+            <View style={styles.centerContainer}>
+              <Image
+                source={require("@/assets/images/m4.png")}
+                style={styles.logoImage}
+                resizeMode="contain"
+              />
+            </View>
 
-        <View style={styles.topButtonsContainer}>
+            {/* Right Side - Skip */}
+            <View style={styles.rightContainer}>
+              <TouchableOpacity onPress={handleSkip}>
+                <Text style={[styles.skipText, { color: "#922033" }]}>
+                  {t("common.skip")}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {showLanguageDropdown && (
+            <LinearGradient
+              colors={["#fafafa", "#d19a9c"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[
+                styles.languageDropdown,
+                {
+                  top: dropdownPosition.top,
+                  left: dropdownPosition.left,
+                  shadowColor: theme.text.color,
+                },
+              ]}
+            >
+              {languages.map((lang) => (
+                <TouchableOpacity
+                  key={lang.code}
+                  style={styles.languageOption}
+                  onPress={() => changeLanguage(lang.code)}
+                >
+                  <Text
+                    style={[
+                      styles.languageText,
+                      {
+                        color:
+                          i18n.language === lang.code
+                            ? "#922033"
+                            : theme.text.color,
+                      },
+                    ]}
+                  >
+                    {lang.name}
+                  </Text>
+                  {i18n.language === lang.code && (
+                    <Ionicons name="checkmark" size={20} color="#922033" />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </LinearGradient>
+          )}
+
+          <FlatList
+            ref={flatListRef}
+            data={onboardingData}
+            renderItem={renderItem}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            bounces={false}
+            keyExtractor={(item) => item.id}
+            onViewableItemsChanged={onViewableItemsChanged}
+            viewabilityConfig={viewabilityConfig}
+            scrollEventThrottle={16}
+          />
+
+          {renderPagination()}
+
           <TouchableOpacity
-            ref={languageButtonRef}
-            style={styles.languageButton}
-            onPress={toggleLanguageDropdown}
+            style={[styles.nextButton, theme.button]}
+            onPress={handleNext}
           >
-            <Ionicons name="language" size={24} color="#922033" />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-            <Text style={[styles.skipText, { color: "#922033" }]}>
-              {t("common.skip")}
+            <Text style={[styles.nextButtonText, theme.buttonText]}>
+              {currentIndex === onboardingData.length - 1
+                ? t("common.getStarted")
+                : t("common.next")}
             </Text>
           </TouchableOpacity>
         </View>
-
-        {showLanguageDropdown && (
-          <LinearGradient
-            colors={["#fafafa", "#d19a9c"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={[
-              styles.languageDropdown,
-              {
-                top: dropdownPosition.top,
-                left: dropdownPosition.left,
-                shadowColor: theme.text.color,
-              },
-            ]}
-          >
-            {languages.map((lang) => (
-              <TouchableOpacity
-                key={lang.code}
-                style={styles.languageOption}
-                onPress={() => changeLanguage(lang.code)}
-              >
-                <Text
-                  style={[
-                    styles.languageText,
-                    {
-                      color:
-                        i18n.language === lang.code
-                          ? "#922033"
-                          : theme.text.color,
-                    },
-                  ]}
-                >
-                  {lang.name}
-                </Text>
-                {i18n.language === lang.code && (
-                  <Ionicons name="checkmark" size={20} color="#922033" />
-                )}
-              </TouchableOpacity>
-            ))}
-          </LinearGradient>
-        )}
-
-        <FlatList
-          ref={flatListRef}
-          data={onboardingData}
-          renderItem={renderItem}
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          bounces={false}
-          keyExtractor={(item) => item.id}
-          onViewableItemsChanged={onViewableItemsChanged}
-          viewabilityConfig={viewabilityConfig}
-          scrollEventThrottle={16}
-        />
-
-        {renderPagination()}
-
-        <TouchableOpacity
-          style={[styles.nextButton, theme.button]}
-          onPress={handleNext}
-        >
-          <Text style={[styles.nextButtonText, theme.buttonText]}>
-            {currentIndex === onboardingData.length - 1
-              ? t("common.getStarted")
-              : t("common.next")}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </GradientBackground>
+      </GradientBackground>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50,
   },
-  backgroundImage: {
-    position: "absolute",
-    top: 0,
-    alignSelf: "center",
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    width: '100%',
+  },
+  leftContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  centerContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rightContainer: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
+  logoImage: {
     width: 220,
     height: 100,
-  },
-  topButtonsContainer: {
-    position: "absolute",
-    top: 50,
-    right: 20,
-    zIndex: 1,
-    flexDirection: "row",
-    alignItems: "center",
+    tintColor: "#922033"
   },
   languageButton: {
-    padding: 10,
-    marginRight: 10,
+    marginRight: 15,
   },
   musicButton: {
-    position: "absolute",
-    top: 50,
-    left: 20,
-    zIndex: 1,
-    padding: 10,
+    marginRight: 10,
   },
   musicIcon: {
     fontSize: 24,
-  },
-  skipButton: {
-    padding: 10,
   },
   skipText: {
     fontSize: 16,
     fontWeight: "600",
   },
   languageDropdown: {
-    position: "absolute",
+    position: 'absolute',
     width: 100,
     borderRadius: 8,
     padding: 8,
@@ -342,9 +357,9 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   languageOption: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingVertical: 8,
     paddingHorizontal: 12,
   },
@@ -352,28 +367,28 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   slide: {
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 20,
   },
   title: {
     fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontWeight: 'bold',
+    textAlign: 'center',
     marginBottom: 20,
   },
   description: {
     fontSize: 16,
-    textAlign: "center",
+    textAlign: 'center',
     lineHeight: 24,
     opacity: 0.8,
     paddingHorizontal: 10,
   },
   pagination: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 30,
   },
   dot: {
@@ -386,11 +401,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 40,
     padding: 15,
     borderRadius: 10,
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: 40,
   },
   nextButtonText: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 });

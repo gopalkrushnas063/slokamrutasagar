@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Text, TouchableOpacity, View, ScrollView, FlatList } from "react-native";
-import { useTheme } from '../../src/context/ThemeContext';
+import { useTheme } from '../src/context/ThemeContext';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../src/store';
-import { GradientBackground } from '../../src/styles/themes';
+import { RootState } from '../src/store';
+import { GradientBackground } from '../src/styles/themes';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
