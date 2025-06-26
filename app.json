@@ -4,30 +4,28 @@
     "slug": "slokamrutasagar",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/splash-icon.png",
+    "icon": "./assets/images/app-logo.png",
     "scheme": "slokamrutasagar",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "requiresFullScreen": true,
       "usesIcloudStorage": true,
       "infoPlist": {
         "NSMicrophoneUsageDescription": "This app needs microphone access for audio playback"
-      }
+      },
+      "bundleIdentifier": "com.gopalkrushnas063.slokamrutasagar"
     },
     "android": {
-      "releaseChannel": "production",
-      "buildType": "app-bundle",
-      "gradleCommand": ":app:bundleRelease",
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/splash-icon.png",
+        "foregroundImage": "./assets/images/app-logo.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.gopalkrushnas063.slokamrutasagar"
     },
     "web": {
       "bundler": "metro",
@@ -39,7 +37,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/app-logo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
