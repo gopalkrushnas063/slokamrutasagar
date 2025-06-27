@@ -1,4 +1,4 @@
-package com.gopalkrushnas063.slokamrutasagar
+package com.slokamrutasagar
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

@@ -14,7 +14,7 @@
       "infoPlist": {
         "NSMicrophoneUsageDescription": "This app needs microphone access for audio playback"
       },
-      "bundleIdentifier": "com.gopalkrushnas063.slokamrutasagar"
+      "bundleIdentifier": "com.slokamrutasagar"
     },
     "android": {
       "permissions": [
@@ -25,7 +25,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.gopalkrushnas063.slokamrutasagar"
+      "package": "com.slokamrutasagar"
     },
     "web": {
       "bundler": "metro",
