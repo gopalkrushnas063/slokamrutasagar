@@ -1,4 +1,4 @@
-package com.slokamrutasagar
+package com.gopalkrushnas063.slokamrutasagar
 
 import android.app.Application
 import android.content.res.Configuration
