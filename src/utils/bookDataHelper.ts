@@ -2,13 +2,16 @@
 import i18n from 'i18next';
 import { bhagavadGitaData } from '@/src/data/books/bhagavadGitaData';
 import { rigVedaMantrasData } from '@/src/data/books/rigVedaMantrasData';
+import { laxmiPuranData } from '@/src/data/books/laxmiPuranData';
+import { krishnaLeelaData } from '@/src/data/books/krishnaLeelaData';
 
 type VerseTranslation = {
   verse?: number;
-  sanskrit?: string;  // Added Sanskrit field
+  sanskrit?: string;
   transliteration?: string;
   translation?: string;
   commentary?: string;
+  audioUrl?: string;
 };
 
 type ChapterTranslation = {
@@ -25,21 +28,56 @@ type BookTranslation = {
 };
 
 export const getLocalizedBookData = (bookId: string) => {
-  const bookData = bookId === '1' ? bhagavadGitaData : rigVedaMantrasData;
-  
-  // Get translations - add error handling
-  let translations: BookTranslation;
-  try {
-    translations = bookId === '1' 
-      ? i18n.t('bhagavadGitaData', { returnObjects: true }) as BookTranslation
-      : i18n.t('rigVedaMantrasData', { returnObjects: true }) as BookTranslation;
-  } catch (error) {
-    console.error('Error loading translations:', error);
-    translations = {};
+  // Get the base book data
+  let bookData;
+  switch(bookId) {
+    case '1': 
+      bookData = bhagavadGitaData; 
+      break;
+    case '2': 
+      bookData = rigVedaMantrasData; 
+      break;
+    case '3': 
+      bookData = laxmiPuranData; 
+      break;
+    case '4': 
+      bookData = krishnaLeelaData; 
+      break;
+    default: 
+      bookData = bhagavadGitaData;
   }
 
+  // Determine which translation key to use based on book ID
+  let translationKey;
+  switch(bookId) {
+    case '1': 
+      translationKey = 'bhagavadGitaData'; 
+      break;
+    case '2': 
+      translationKey = 'rigVedaMantrasData'; 
+      break;
+    case '3': 
+      translationKey = 'laxmiPuranData'; 
+      break;
+    case '4': 
+      translationKey = 'krishnaLeelaData'; 
+      break;
+    default: 
+      translationKey = 'bhagavadGitaData';
+  }
+
+  // Get translations with error handling
+  let translations: BookTranslation = {};
+  try {
+    translations = i18n.t(translationKey, { returnObjects: true }) as BookTranslation;
+  } catch (error) {
+    console.error(`Error loading translations for ${translationKey}:`, error);
+  }
+
+  // Merge the base data with translations
   return {
     ...bookData,
+    id: bookId, // Ensure the ID is preserved
     title: translations?.title || bookData.title,
     author: translations?.author || bookData.author,
     language: translations?.language || bookData.language,
@@ -71,7 +109,9 @@ export const getLocalizedBookData = (bookId: string) => {
             }),
             ...(translatedVerse?.commentary && {
               commentary: translatedVerse.commentary
-            })
+            }),
+            // Preserve audioUrl from original data if not in translation
+            audioUrl: verse.audioUrl
           };
         })
       };
@@ -80,12 +120,33 @@ export const getLocalizedBookData = (bookId: string) => {
 };
 
 export const getAllLocalizedBooks = () => {
-  return [
-    getLocalizedBookData('1'), // Bhagavad Gita
-    getLocalizedBookData('2')  // Rig Veda Mantras
-  ];
+  return ['1', '2', '3', '4'].map(id => getLocalizedBookData(id));
 };
 
 export const getLocalizedBookById = (id: string) => {
   return getLocalizedBookData(id);
+};
+
+// Utility function to get all verses from a book with chapter info
+export const getAllVerses = (book: ReturnType<typeof getLocalizedBookData>) => {
+  const allVerses: (VerseTranslation & { 
+    chapter: number; 
+    chapterTitle: string;
+    bookId: string;
+    bookTitle: string;
+  })[] = [];
+  
+  book.chapters.forEach(ch => {
+    ch.verses.forEach(v => {
+      allVerses.push({
+        ...v,
+        chapter: ch.chapter,
+        chapterTitle: ch.title,
+        bookId: book.id,
+        bookTitle: book.title
+      });
+    });
+  });
+  
+  return allVerses;
 };

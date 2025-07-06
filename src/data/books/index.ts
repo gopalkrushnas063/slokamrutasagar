@@ -1,6 +1,8 @@
 // Import all book data files
 import { bhagavadGitaData } from "./bhagavadGitaData";
 import { rigVedaMantrasData } from "./rigVedaMantrasData";
+import { laxmiPuranData } from "./laxmiPuranData";
+import { krishnaLeelaData } from "./krishnaLeelaData";
 
 
 // Type definition for Book data structure
@@ -35,6 +37,8 @@ export type Verse = {
 export const allBooks: Book[] = [
   bhagavadGitaData,
   rigVedaMantrasData,
+  laxmiPuranData,
+  krishnaLeelaData
 ];
 
 // Function to get book data by ID
@@ -67,4 +71,6 @@ export const getAllVerses = (book: Book): (Verse & { chapter: number; chapterTit
 export {
   bhagavadGitaData,
   rigVedaMantrasData,
+  laxmiPuranData,
+  krishnaLeelaData
 };

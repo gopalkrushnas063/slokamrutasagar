@@ -97,43 +97,43 @@ export default function HomeScreen() {
       author: t("books.book1.author"),
       image: require("@/assets/images/categories/bhagavad-gita.jpeg"),
       rating: 4.8,
-      comingSoon: false, // Available now
+      comingSoon: false,
     },
     {
       id: "2",
       title: t("books.book2.title"),
       category: "vedas",
-      author: "",
+      author: t("books.book2.author"),
       image: require("@/assets/images/categories/vedas.jpg"),
       rating: 0,
-      comingSoon: true, // Coming soon
-    },
-    {
-      id: "3",
-      title: t("books.book3.title"),
-      category: "stories",
-      author: "",
-      image: require("@/assets/images/categories/krishna_leela.png"),
-      rating: 0,
-      comingSoon: true, // Coming soon
+      comingSoon: true,
     },
     {
       id: "4",
-      title: t("books.book4.title"),
-      category: "shlokas",
-      author: "",
-      image: require("@/assets/images/categories/vishnu.avif"),
+      title: t("books.book3.title"),
+      category: "stories",
+      author: t("books.book3.author"),
+      image: require("@/assets/images/categories/krishna_leela.png"),
       rating: 0,
-      comingSoon: true, // Coming soon
+      comingSoon: true, // Now available
+    },
+    {
+      id: "3",
+      title: t("books.book5.title"),
+      category: "mantras",
+      author: t("books.book5.author"),
+      image: require("@/assets/images/categories/laxmi.jpg"),
+      rating: 0,
+      comingSoon: false, // Now available
     },
     {
       id: "5",
-      title: t("books.book5.title"),
-      category: "mantras",
-      author: "",
-      image: require("@/assets/images/categories/laxmi.jpg"),
+      title: t("books.book4.title"),
+      category: "shlokas",
+      author: t("books.book4.author"),
+      image: require("@/assets/images/categories/vishnu.avif"),
       rating: 0,
-      comingSoon: true, // Coming soon
+      comingSoon: true,
     },
   ];
 

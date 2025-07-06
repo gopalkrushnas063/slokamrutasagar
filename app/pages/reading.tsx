@@ -1,10 +1,11 @@
+import { getAllVerses } from "@/src/data/books";
+import { getLocalizedBookData } from "@/src/utils/bookDataHelper";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Audio } from "expo-av";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
-  Dimensions,
   PanResponder,
   Platform,
   ScrollView,
@@ -19,20 +20,22 @@ import { useSelector } from "react-redux";
 import { useTheme } from "../../src/context/ThemeContext";
 import { RootState } from "../../src/store";
 import { GradientBackground } from "../../src/styles/themes";
-import { getAllVerses } from "@/src/data/books";
-import { getLocalizedBookData } from "@/src/utils/bookDataHelper";
 
 export default function ReadingScreen() {
   const navigation = useNavigation();
-  const { id, chapter: chapterParam, verse: verseParam } = useLocalSearchParams();
+  const {
+    id,
+    chapter: chapterParam,
+    verse: verseParam,
+  } = useLocalSearchParams();
   const chapter = Number(chapterParam) || 1;
   const verse = Number(verseParam) || 1;
-  
+
   const theme = useTheme();
   const currentTheme = useSelector(
     (state: RootState) => state.theme.currentTheme
   );
-  
+
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [position, setPosition] = useState(0);
@@ -43,14 +46,16 @@ export default function ReadingScreen() {
 
   // Get book data and current verse
   const book = getLocalizedBookData(id as string);
-  const currentChapter = book.chapters.find(ch => ch.chapter === chapter);
-  const currentVerse = currentChapter?.verses.find(v => v.verse === verse);
+  const currentChapter = book.chapters.find((ch) => ch.chapter === chapter);
+  const currentVerse = currentChapter?.verses.find((v) => v.verse === verse);
   const allVerses = getAllVerses(book);
-  const currentIndex = allVerses.findIndex(v => v.chapter === chapter && v.verse === verse);
+  const currentIndex = allVerses.findIndex(
+    (v) => v.chapter === chapter && v.verse === verse
+  );
 
   // Handle back navigation and cleanup
   useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', () => {
+    const unsubscribe = navigation.addListener("beforeRemove", () => {
       if (sound) {
         sound.stopAsync();
         sound.unloadAsync();
@@ -67,14 +72,24 @@ export default function ReadingScreen() {
         progressBarRef.current?.measure((x, y, width) => {
           progressBarWidth.current = width;
           const touchX = evt.nativeEvent.locationX;
-          const newPosition = Math.max(0, Math.min((touchX / width) * duration, duration));
+          const newPosition = Math.max(
+            0,
+            Math.min((touchX / width) * duration, duration)
+          );
           setPosition(newPosition);
           progressAnim.setValue(newPosition / duration);
         });
       },
       onPanResponderMove: (evt, gestureState) => {
         if (progressBarWidth.current > 0) {
-          const newPosition = Math.max(0, Math.min(position + (gestureState.dx / progressBarWidth.current) * duration, duration));
+          const newPosition = Math.max(
+            0,
+            Math.min(
+              position +
+                (gestureState.dx / progressBarWidth.current) * duration,
+              duration
+            )
+          );
           setPosition(newPosition);
           progressAnim.setValue(newPosition / duration);
         }
@@ -247,7 +262,10 @@ export default function ReadingScreen() {
           if (status.isLoaded && status.positionMillis) {
             const newPosition = status.positionMillis / 1000;
             setPosition(newPosition);
-            progressAnim.setValue(newPosition / (status.durationMillis ? status.durationMillis / 1000 : 1));
+            progressAnim.setValue(
+              newPosition /
+                (status.durationMillis ? status.durationMillis / 1000 : 1)
+            );
           }
         });
       }
@@ -265,7 +283,7 @@ export default function ReadingScreen() {
   const navigateToVerse = (newChapter: number, newVerse: number) => {
     router.setParams({
       chapter: newChapter.toString(),
-      verse: newVerse.toString()
+      verse: newVerse.toString(),
     });
     if (sound) {
       sound.stopAsync();
@@ -290,10 +308,8 @@ export default function ReadingScreen() {
       navigateToVerse(nextVerse.chapter, nextVerse.verse);
     }
   };
-  
 
   const renderContent = () => (
-    
     <View style={[styles.container, dynamicStyles.backgroundStyle]}>
       <SafeAreaView
         edges={["top"]}
@@ -334,24 +350,34 @@ export default function ReadingScreen() {
               </Text>
             </View>
           </View>
+          {currentVerse?.transliteration == "" ? null : (
+            <Text style={[styles.sectionTitle, dynamicStyles.textColor]}>
+              Transliteration
+            </Text>
+          )}
 
-          <Text style={[styles.sectionTitle, dynamicStyles.textColor]}>
-            Transliteration
-          </Text>
-          <Text style={[styles.transliteration, dynamicStyles.textColor]}>
-            {currentVerse?.transliteration || ""}
-          </Text>
+          {currentVerse?.transliteration == "" ? null : (
+            <Text style={[styles.transliteration, dynamicStyles.textColor]}>
+              {currentVerse?.transliteration || ""}
+            </Text>
+          )}
 
-          <Text style={[styles.sectionTitle, dynamicStyles.textColor]}>
-            Translation
-          </Text>
-          <Text style={[styles.translation, dynamicStyles.textColor]}>
-            {currentVerse?.translation || ""}
-          </Text>
+          {currentVerse?.translation == "" ? null : (
+            <Text style={[styles.sectionTitle, dynamicStyles.textColor]}>
+              Translation
+            </Text>
+          )}
+          {currentVerse?.translation == "" ? null : (
+            <Text style={[styles.translation, dynamicStyles.textColor]}>
+              {currentVerse?.translation || ""}
+            </Text>
+          )}
 
-          <Text style={[styles.sectionTitle, dynamicStyles.textColor]}>
+          {console.log(currentVerse?.sanskrit)} {/*लक्ष्मीस्तुतिः*/}
+
+          { currentVerse?.sanskrit == "लक्ष्मीस्तुतिः" ? null : <Text style={[styles.sectionTitle, dynamicStyles.textColor]}>
             Commentary
-          </Text>
+          </Text>}
           <Text style={[styles.commentary, dynamicStyles.textColor]}>
             {currentVerse?.commentary || ""}
           </Text>
@@ -373,12 +399,12 @@ export default function ReadingScreen() {
                 />
               </TouchableOpacity>
 
-              <View 
+              <View
                 style={styles.progressContainer}
                 ref={progressBarRef}
                 collapsable={false}
               >
-                <View 
+                <View
                   style={[
                     styles.progressBackground,
                     { backgroundColor: dynamicStyles.progressBg },
@@ -417,9 +443,9 @@ export default function ReadingScreen() {
               style={[
                 styles.navButton,
                 dynamicStyles.borderColor,
-                { 
+                {
                   backgroundColor: dynamicStyles.verseContainerBg,
-                  opacity: currentIndex === 0 ? 0.5 : 1
+                  opacity: currentIndex === 0 ? 0.5 : 1,
                 },
               ]}
             >
@@ -438,9 +464,9 @@ export default function ReadingScreen() {
               style={[
                 styles.navButton,
                 dynamicStyles.borderColor,
-                { 
+                {
                   backgroundColor: dynamicStyles.verseContainerBg,
-                  opacity: currentIndex === allVerses.length - 1 ? 0.5 : 1
+                  opacity: currentIndex === allVerses.length - 1 ? 0.5 : 1,
                 },
               ]}
             >
@@ -570,12 +596,12 @@ const styles = StyleSheet.create({
   progressContainer: {
     flex: 1,
     height: 40,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   progressBackground: {
     height: 6,
     borderRadius: 3,
-    width: '100%',
+    width: "100%",
   },
   progressFill: {
     height: "100%",
